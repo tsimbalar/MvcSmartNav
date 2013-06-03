@@ -34,6 +34,9 @@
                 @RenderBody()
             </section>
         </div>
+        <nav id="primaryNav" style="display: block;float: left;">
+            @Html.Action("GenerateNav", "Navigation", new {area="", callingContext = this.ViewContext})
+        </nav>
         <footer>
             <div class="content-wrapper">
                 <div class="float-left">
