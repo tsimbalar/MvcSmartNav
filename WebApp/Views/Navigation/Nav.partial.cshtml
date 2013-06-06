@@ -1,9 +1,9 @@
-﻿@using WebApp.Controllers
-@model WebApp.Controllers.NavigationModelBase
+﻿@using MvcSmartNav.ViewModels
+@model NavTreeViewModelBase
 
 @functions
 {
-    string BuildToolTip(INavigationNodeModel node)
+    string BuildToolTip(INavComponentViewModel node)
     {
         var result = node.ToolTip;
 
@@ -48,7 +48,7 @@
         return result;
     }
 
-    string BuildLinkCssClasses(INavigationNodeModel node)
+    string BuildLinkCssClasses(INavComponentViewModel node)
     {
         var cssClasses = new List<String>();
         if (node.IsActive)
@@ -75,6 +75,7 @@
     }
 </style>
 <div class="nav">
+    <a href="@Model.NavigationRoot.TargetUrl" title="@BuildToolTip(Model.NavigationRoot)" class="nav-item nav-root @BuildLinkCssClasses(Model.NavigationRoot)">@Model.NavigationRoot.Name</a>
     <ul class="nav-menu nav-level-0">
         @foreach (var level0 in Model.NavigationRoot.Children)
         {

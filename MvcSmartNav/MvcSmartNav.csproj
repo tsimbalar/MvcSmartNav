@@ -1,0 +1,76 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{E57375CE-42FA-4502-A4E4-FCA9CF0CD2FA}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>MvcSmartNav</RootNamespace>
+    <AssemblyName>MvcSmartNav</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Mvc, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Enablement\AlwaysDisabledStrategy.cs" />
+    <Compile Include="Enablement\AlwaysEnabledStrategy.cs" />
+    <Compile Include="NavComponents.cs" />
+    <Compile Include="Visibility\AlwaysVisibleStrategy.cs" />
+    <Compile Include="ViewModels\NavComponentViewModelBase.cs" />
+    <Compile Include="ViewModels\NavTreeViewModelBase.cs" />
+    <Compile Include="Activation\ExactUrlActivationStrategy.cs" />
+    <Compile Include="ViewModels\INavComponentViewModel.cs" />
+    <Compile Include="ViewModels\INavItemViewModel.cs" />
+    <Compile Include="ViewModels\INavRootViewModel.cs" />
+    <Compile Include="INavComponents.cs" />
+    <Compile Include="INavItemActivationStrategy.cs" />
+    <Compile Include="INavItemEnabledStrategy.cs" />
+    <Compile Include="INavItemVisibilityStrategy.cs" />
+    <Compile Include="NavBuilder.cs" />
+    <Compile Include="ViewModels\NavItemViewModel.cs" />
+    <Compile Include="ViewModels\NavRootViewModel.cs" />
+    <Compile Include="ViewModels\NavTreeViewModel.cs" />
+    <Compile Include="Visibility\NeverVisibleStrategy.cs" />
+    <Compile Include="Activation\NodeActivation.cs" />
+    <Compile Include="Enablement\NodeEnablement.cs" />
+    <Compile Include="Visibility\NodeVisibility.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

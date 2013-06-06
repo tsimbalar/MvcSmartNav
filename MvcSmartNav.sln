@@ -3,6 +3,8 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApp", "WebApp\WebApp.csproj", "{7B750D2D-383D-4F62-8199-20B29034DA83}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MvcSmartNav", "MvcSmartNav\MvcSmartNav.csproj", "{E57375CE-42FA-4502-A4E4-FCA9CF0CD2FA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -13,6 +15,10 @@ Global
 		{7B750D2D-383D-4F62-8199-20B29034DA83}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7B750D2D-383D-4F62-8199-20B29034DA83}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7B750D2D-383D-4F62-8199-20B29034DA83}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E57375CE-42FA-4502-A4E4-FCA9CF0CD2FA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E57375CE-42FA-4502-A4E4-FCA9CF0CD2FA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E57375CE-42FA-4502-A4E4-FCA9CF0CD2FA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E57375CE-42FA-4502-A4E4-FCA9CF0CD2FA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
