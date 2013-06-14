@@ -24,7 +24,7 @@ namespace MvcSmartNav.Helpers
             result.Append(extraInfo.ToString(TagRenderMode.StartTag));
 
             var debugMode = new TagBuilder("h3");
-            debugMode.SetInnerText("DEBUG NAV");
+            debugMode.SetInnerText("SmartNav Debug Nav");
             result.Append(debugMode.ToString(TagRenderMode.Normal));
 
             var debugHelpText = new TagBuilder("p");
