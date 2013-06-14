@@ -1,0 +1,39 @@
+﻿#smartNavDebugNav {
+    border: 1px solid #6b6b6b;
+    padding: 4px;
+    background-color: white;
+}
+
+
+    #smartNavDebugNav .debug-info {
+        display: block;
+        font-size: 0.8em;
+        margin: 0;
+        background-color: #E0E0E0;
+    }
+
+        #smartNavDebugNav .debug-info h3 {
+            color: orangered;
+            text-align: center;
+            margin: 0;
+            font-weight: bold;
+        }
+
+        #smartNavDebugNav .debug-info p {
+            margin: 0;
+            color: #6b6b6b;
+        }
+
+.smartnav .active {
+    font-weight: bold;
+}
+
+.smartnav .disabled a, .smartnav .disabled {
+    color: #C0C0C0;
+    cursor: not-allowed;
+}
+
+.smartnav .invisible a, .smartnav .invisible {
+    -moz-text-decoration-line: line-through;
+    text-decoration-line: line-through;
+}

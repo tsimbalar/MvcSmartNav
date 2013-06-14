@@ -6,6 +6,7 @@
         <link href="~/favicon.ico" rel="shortcut icon" type="image/x-icon" />
         <meta name="viewport" content="width=device-width" />
         @Styles.Render("~/Content/css")
+        @Styles.Render("~/Content/SmartNav")
         @Scripts.Render("~/bundles/modernizr")
     </head>
     <body>
@@ -34,7 +35,7 @@
                 @RenderBody()
             </section>
         </div>
-        <nav id="primaryNav" style="display: block;float: left;">
+        <nav id="primaryNav" style="display: block;position:absolute; top:100px;right:20px;">
             @Html.Action("GenerateNav", "Navigation", new {area="", callingContext = this.ViewContext})
         </nav>
         <footer>

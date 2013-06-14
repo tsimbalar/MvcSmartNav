@@ -15,7 +15,10 @@ namespace WebApp.Controllers
         [ChildActionOnly] // not called directly !
         public ActionResult GenerateNav(ViewContext callingContext)
         {
-            var navTree = new NavRoot("Home page", Url.Action("Index", "Home"));
+            var navTree = new NavRoot("Home page", Url.Action("Index", "Home"))
+                              {
+                                  Tooltip = "Home"
+                              };
 
             var child1 = new NavItem("Home link")
                                  {
@@ -46,6 +49,14 @@ namespace WebApp.Controllers
                 TargetUrl = Url.Action("Contact", "Home"),
                 EnabilityStrategy = new AlwaysDisabledStrategy()
             };
+
+            var child2sub2_sub1 = new NavItem("subsub")
+                                      {
+                                          Tooltip = "rien",
+                                          TargetUrl = Url.Action("About", "Home")
+                                      };
+            child2_sub2.AddChild(child2sub2_sub1);
+
             child2.AddChild(child2_sub2);
 
             var child3 = new NavItem("About link")

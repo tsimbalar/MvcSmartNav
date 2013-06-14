@@ -7,7 +7,10 @@ namespace MvcSmartNav
     {
         public NavTreeViewModelBase Build(ViewContext context, INavRoot tree)
         {
-            var root = new NavRootViewModel(tree.Name, tree.TargetUrl);
+            var root = new NavRootViewModel(tree.Name, tree.TargetUrl)
+                           {
+                               ToolTip = tree.Tooltip
+                           };
             SetDisplayOptionsAndChildren(context, source: tree, target: root);
 
             var result = new NavTreeViewModel(context, root);
