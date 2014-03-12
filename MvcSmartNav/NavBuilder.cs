@@ -7,7 +7,7 @@ namespace MvcSmartNav
     {
         public NavTreeViewModelBase Build(ViewContext context, INavRoot tree)
         {
-            var root = new NavRootViewModel(tree.Name, tree.TargetUrl)
+            var root = new NavRootViewModel(tree.Name, tree.EvaluateTargetUrl(context))
                            {
                                ToolTip = tree.Tooltip
                            };
@@ -21,7 +21,7 @@ namespace MvcSmartNav
 
         private static NavItemViewModel BuildNavItem<TNavItem>(ViewContext context, TNavItem navItem) where TNavItem : INavItem
         {
-            var result = new NavItemViewModel(navItem.Name, navItem.TargetUrl)
+            var result = new NavItemViewModel(navItem.Name, navItem.EvaluateTargetUrl(context))
                              {
                                  ToolTip = navItem.Tooltip
                              };

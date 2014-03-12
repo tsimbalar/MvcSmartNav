@@ -70,6 +70,7 @@
     <Compile Include="Enablement\AuthorizationEnabledStrategy.cs" />
     <Compile Include="Helpers\HtmlHelperNavDebugExtensions.cs" />
     <Compile Include="ISmartNavEnabledAttribute.cs" />
+    <Compile Include="MvcActionNavComponents.cs" />
     <Compile Include="NavComponents.cs" />
     <Compile Include="Visibility\AlwaysVisibleStrategy.cs" />
     <Compile Include="ViewModels\NavComponentViewModelBase.cs" />

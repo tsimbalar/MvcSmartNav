@@ -33,7 +33,6 @@ namespace MvcSmartNav.Enablement
 
             var enabled = attribute.EvaluateEnablement(context);
             return enabled;
-            //return null;
         }
     }
 }

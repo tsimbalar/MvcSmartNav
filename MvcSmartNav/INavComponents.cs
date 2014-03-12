@@ -8,7 +8,7 @@ namespace MvcSmartNav
 {
     public interface INavComponent
     {
-        string TargetUrl { get; }
+        string EvaluateTargetUrl(ViewContext context);
 
         string Name { get; }
 
@@ -31,6 +31,6 @@ namespace MvcSmartNav
 
     public interface INavItem : INavComponent
     {
-        
+
     }
 }

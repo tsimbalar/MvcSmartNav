@@ -11,27 +11,33 @@ namespace MvcSmartNav
     public abstract class NavComponentBase : INavComponent
     {
         private readonly string _name;
-        private readonly List<NavItem> _children;
+        private readonly List<INavItem> _children;
         private INavItemActivationStrategy<NavComponentBase> _activationStrategy;
         private INavItemVisibilityStrategy<NavComponentBase> _visibilityStrategy;
         private INavItemEnabledStrategy<NavComponentBase> _enabilityStrategy;
 
-        public NavComponentBase(string name)
+        protected NavComponentBase(string name, string targetUrl)
         {
             if (name == null) throw new ArgumentNullException("name");
             _name = name;
-            _children = new List<NavItem>();
+            TargetUrl = targetUrl;
+            _children = new List<INavItem>();
             _activationStrategy = new ExactUrlActivationStrategy();
             _visibilityStrategy = new AlwaysVisibleStrategy();
             _enabilityStrategy = new AlwaysEnabledStrategy();
 
         }
 
+        public string EvaluateTargetUrl(ViewContext context)
+        {
+            return TargetUrl;
+        }
+
         public string Name { get { return _name; } }
 
         public string Tooltip { get; set; }
 
-        public string TargetUrl { get; set; }
+        public string TargetUrl { get; private set; }
 
         public INavItemActivationStrategy<NavComponentBase> ActivationStrategy
         {
@@ -67,9 +73,9 @@ namespace MvcSmartNav
 
         public IEnumerable<INavItem> Children { get { return _children; } }
 
-        
 
-        public void AddChild(NavItem child)
+
+        public void AddChild(INavItem child)
         {
             _children.Add(child);
         }
@@ -91,20 +97,19 @@ namespace MvcSmartNav
         }
     }
 
-    public class NavItem : NavComponentBase, INavItem
+    public sealed class NavItem : NavComponentBase, INavItem
     {
-        public NavItem(string name)
-            : base(name)
+        public NavItem(string name, string targetUrl)
+            : base(name, targetUrl)
         {
         }
     }
 
-    public class NavRoot : NavComponentBase, INavRoot
+    public sealed class NavRoot : NavComponentBase, INavRoot
     {
         public NavRoot(string name, string targetUrl)
-            : base(name)
+            : base(name, targetUrl)
         {
-            TargetUrl = targetUrl;
         }
     }
 }
