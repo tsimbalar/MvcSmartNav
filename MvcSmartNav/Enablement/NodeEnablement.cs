@@ -16,5 +16,6 @@ namespace MvcSmartNav.Enablement
 
         public bool IsDisabled { get { return _disabled; } }
         public string Reason { get { return _reason; } }
+
     }
 }

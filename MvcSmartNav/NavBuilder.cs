@@ -19,7 +19,7 @@ namespace MvcSmartNav
         }
 
 
-        private NavItemViewModel BuildNavItem<TNavItem>(ViewContext context, TNavItem navItem) where TNavItem : INavItem
+        private static NavItemViewModel BuildNavItem<TNavItem>(ViewContext context, TNavItem navItem) where TNavItem : INavItem
         {
             var result = new NavItemViewModel(navItem.Name, navItem.TargetUrl)
                              {
@@ -31,7 +31,7 @@ namespace MvcSmartNav
         }
 
 
-        private void SetDisplayOptionsAndChildren(ViewContext context, INavComponent source, NavComponentViewModelBase target)
+        private static void SetDisplayOptionsAndChildren(ViewContext context, INavComponent source, NavComponentViewModelBase target)
         {
             var visibility = source.EvaluateVisibility(context);
             target.SetVisibility(visibility.IsVisible, visibility.Reason);

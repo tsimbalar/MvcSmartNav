@@ -15,7 +15,7 @@ namespace WebApp.Controllers
         [ChildActionOnly] // not called directly !
         public ActionResult GenerateNav(ViewContext callingContext)
         {
-            var navTree = new NavRoot("Home page", Url.Action("Index", "Home"))
+            var root = new NavRoot("Home page", Url.Action("Index", "Home"))
                               {
                                   Tooltip = "Home"
                               };
@@ -25,7 +25,22 @@ namespace WebApp.Controllers
                                      Tooltip = "Tooltip of firstElement",
                                      TargetUrl = Url.Action("Index", "Home")
                                  };
-            navTree.AddChild(child1);
+            var child1_sub1 = new NavItem("Some Page")
+                                  {
+                                      Tooltip = "Some Page",
+                                      TargetUrl = Url.Action("SomePage", "Home")
+                                  };
+            child1.AddChild(child1_sub1);
+
+            var child1_sub2 = new NavItem("Restricted Page")
+            {
+                Tooltip = "Some super secret Page",
+                TargetUrl = Url.Action("SomeRestrictedPage", "Home"),
+                EnabilityStrategy = new AuthorizationEnabledStrategy<HomeController,ViewResult>(c=> c.SomeRestrictedPage())
+            };
+            child1.AddChild(child1_sub2);
+
+            root.AddChild(child1);
 
             var child2 = new NavItem("Hidden Home link")
                                   {
@@ -33,7 +48,7 @@ namespace WebApp.Controllers
                                       TargetUrl = Url.Action("Index", "Home"),
                                       VisibilityStrategy = new NeverVisibleStrategy()
                                   };
-            navTree.AddChild(child2);
+            root.AddChild(child2);
 
             var child2_sub1 = new NavItem("subnav")
                                 {
@@ -64,7 +79,7 @@ namespace WebApp.Controllers
                 Tooltip = "Tooltip of 3rd Element",
                 TargetUrl = Url.Action("About", "Home")
             };
-            navTree.AddChild(child3);
+            root.AddChild(child3);
 
 
             var child4 = new NavItem("random link")
@@ -91,9 +106,9 @@ namespace WebApp.Controllers
             child4.AddChild(child4_sub2);
 
 
-            navTree.AddChild(child4);
+            root.AddChild(child4);
 
-            var model = new NavBuilder().Build(callingContext, navTree);
+            var model = new NavBuilder().Build(callingContext, root);
 
             return PartialView("Nav.partial", model);
         }
