@@ -3,6 +3,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Web.Mvc;
+using MvcSmartNav.Helpers;
 
 namespace MvcSmartNav.Enablement
 {
@@ -26,6 +27,33 @@ namespace MvcSmartNav.Enablement
                 .OfType<ISmartNavEnabledAttribute>()
                 .SingleOrDefault();
 
+            if (attribute == null)
+            {
+                return new NodeEnablement(disabled: false, reason: "no ISmartNavEnabledAttribute attribute");
+            }
+
+            var enabled = attribute.EvaluateEnablement(context);
+            return enabled;
+        }
+    }
+
+    //public class AuthorizationEnabledStrategy : INavItemEnabledStrategy<MvcActionNavComponentBase>
+    //{
+    //    public NodeEnablement EvaluateEnablement(MvcActionNavComponentBase navComponent, ViewContext context)
+    //    {
+    //        //ControllerBuilder.Current.GetControllerFactory().
+    //        //var controllerFactory = DependencyResolver.Current.GetService<IControllerFactory>();
+    //        //controllerFactory.CreateController()
+    //        throw new NotImplementedException();
+    //    }
+    //}
+
+    public class AuthorizationEnabledStrategy<TController> : INavItemEnabledStrategy<MvcActionNavComponentBase<TController>> where TController : IController
+    {
+
+        public NodeEnablement EvaluateEnablement(MvcActionNavComponentBase<TController> navComponent, ViewContext context)
+        {
+            var attribute = ReflectionHelper.GetActionAttribute<TController, ISmartNavEnabledAttribute>(navComponent.ActionName);
             if (attribute == null)
             {
                 return new NodeEnablement(disabled: false, reason: "no ISmartNavEnabledAttribute attribute");

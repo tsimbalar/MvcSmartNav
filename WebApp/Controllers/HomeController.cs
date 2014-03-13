@@ -37,6 +37,7 @@ namespace WebApp.Controllers
         }
 
         [SmartNavEnabledAuthorize()]
+        [SmartNavVisibleAuthorize()]
         public ViewResult SomeRestrictedPage()
         {
             ViewBag.Message = "Some VIP page";

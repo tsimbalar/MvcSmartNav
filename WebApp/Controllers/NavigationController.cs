@@ -30,12 +30,19 @@ namespace WebApp.Controllers
                                   };
             child1.AddChild(child1_sub1);
 
-            var child1_sub2 = new NavItem("Restricted Page", Url.Action("SomeRestrictedPage", "Home"))
+            var child1_sub2 = new MvcActionNavItem<HomeController>("Restricted Page", "Home", "SomeRestrictedPage")
             {
-                Tooltip = "Some super secret Page",
-                EnabilityStrategy = new AuthorizationEnabledStrategy<HomeController,ViewResult>(c=> c.SomeRestrictedPage())
+                Tooltip = "Some super secret Page (will disable if not allowed)",
+                EnabilityStrategy = new AuthorizationEnabledStrategy<HomeController>()
             };
             child1.AddChild(child1_sub2);
+
+            var child1_sub3 = new MvcActionNavItem<HomeController>("Restricted Page", "Home", "SomeRestrictedPage")
+            {
+                Tooltip = "Some super secret Page (will hide if not allowed)",
+                VisibilityStrategy = new AuthorizationVisibleStrategy<HomeController>()
+            };
+            child1.AddChild(child1_sub3);
 
             root.AddChild(child1);
 
@@ -102,4 +109,5 @@ namespace WebApp.Controllers
             return PartialView("Nav.partial", model);
         }
     }
+
 }
