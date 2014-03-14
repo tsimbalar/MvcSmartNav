@@ -72,10 +72,9 @@
     <Compile Include="Helpers\HtmlHelperNavDebugExtensions.cs" />
     <Compile Include="Helpers\ReflectionHelper.cs" />
     <Compile Include="IControllerTypeResolver.cs" />
-    <Compile Include="ISmartNavEnabledAttribute.cs" />
-    <Compile Include="ISmartNavVisibleAttribute.cs" />
     <Compile Include="MvcActionNavComponents.cs" />
     <Compile Include="NavComponents.cs" />
+    <Compile Include="SmartNavAttributes.cs" />
     <Compile Include="Visibility\AlwaysVisibleStrategy.cs" />
     <Compile Include="ViewModels\NavComponentViewModelBase.cs" />
     <Compile Include="ViewModels\NavTreeViewModelBase.cs" />

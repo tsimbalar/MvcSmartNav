@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.Mvc;
+﻿using System.Web.Mvc;
 using MvcSmartNav;
-using MvcSmartNav.Enablement;
 
 namespace WebApp.Controllers
 {
@@ -36,67 +31,18 @@ namespace WebApp.Controllers
             return View();
         }
 
-        [SmartNavEnabledAuthorize()]
-        [SmartNavVisibleAuthorize()]
+        [SmartNavAuthorize(WhenUnauthorized = SmartNavAttributeMode.Disable)]
         public ViewResult SomeRestrictedPage()
         {
             ViewBag.Message = "Some VIP page";
             return View();
         }
-    }
 
-
-    public abstract class SmartNavDisplayFilter : Attribute, IAuthorizationFilter
-    {
-        private readonly IAuthorizationFilter _wrapped;
-
-        public SmartNavDisplayFilter(IAuthorizationFilter filter)
+        [SmartNavAuthorize(WhenUnauthorized = SmartNavAttributeMode.Hide)]
+        public ViewResult OtherRestrictedPage()
         {
-            _wrapped = filter;
-        }
-
-        protected IAuthorizationFilter InnerAttribute
-        {
-            get { return _wrapped; }
-        }
-
-        /// <summary>
-        /// Called when calling method directly
-        /// </summary>
-        /// <param name="filterContext"></param>
-        public void OnAuthorization(AuthorizationContext filterContext)
-        {
-            InnerAttribute.OnAuthorization(filterContext);
-        }
-
-
-    }
-
-    /// <summary>
-    /// Trying to look like the MVC AuthorizeAttribute
-    /// </summary>
-    public class SmartNavEnabledAuthorize : AuthorizeAttribute, ISmartNavEnabledAttribute
-    {
-
-        // Methods when in another action, but asking if this action should be visible in the menu
-        // TODO : !!!!
-
-
-        public NodeEnablement EvaluateEnablement(ViewContext callingViewContext)
-        {
-            var authorized = this.AuthorizeCore(callingViewContext.HttpContext);
-            if (authorized)
-            {
-                return new NodeEnablement(disabled: false, reason: "User is authorized");
-            }
-            else
-            {
-                return new NodeEnablement(disabled: true,
-                                          reason:
-                                              string.Format(
-                                                  "not authorized according to SmartNavEnabledAuthorize (Roles = {0}, Users = {1})",
-                                                  Roles, Users));
-            }
+            ViewBag.Message = "Some VIP page 2";
+            return View();
         }
     }
 }

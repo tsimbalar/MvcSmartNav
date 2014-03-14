@@ -29,8 +29,8 @@ namespace MvcSmartNav
             _children = new List<INavItem>();
 
             _activationStrategy = new ExactUrlActivationStrategy();
-            _visibilityStrategy = new AlwaysVisibleStrategy();
-            _enabilityStrategy = new AlwaysEnabledStrategy();
+            _visibilityStrategy = new AuthorizationVisibleStrategy<TController>();
+            _enabilityStrategy = new AuthorizationEnabledStrategy<TController>();
         }
 
 

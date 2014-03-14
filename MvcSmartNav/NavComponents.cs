@@ -15,12 +15,14 @@ namespace MvcSmartNav
         private INavItemActivationStrategy<NavComponentBase> _activationStrategy;
         private INavItemVisibilityStrategy<NavComponentBase> _visibilityStrategy;
         private INavItemEnabledStrategy<NavComponentBase> _enabilityStrategy;
+        private string _targetUrl;
 
-        protected NavComponentBase(string name, string targetUrl)
+        protected NavComponentBase(string name, string targetUrl = "")
         {
             if (name == null) throw new ArgumentNullException("name");
+            if (targetUrl == null) throw new ArgumentNullException("targetUrl");
             _name = name;
-            TargetUrl = targetUrl;
+            _targetUrl = targetUrl;
             _children = new List<INavItem>();
             _activationStrategy = new ExactUrlActivationStrategy();
             _visibilityStrategy = new AlwaysVisibleStrategy();
@@ -30,14 +32,17 @@ namespace MvcSmartNav
 
         public string EvaluateTargetUrl(ViewContext context)
         {
-            return TargetUrl;
+            return _targetUrl;
         }
 
         public string Name { get { return _name; } }
 
         public string Tooltip { get; set; }
 
-        public string TargetUrl { get; private set; }
+        public string TargetUrl
+        {
+            get { return _targetUrl; }
+        }
 
         public INavItemActivationStrategy<NavComponentBase> ActivationStrategy
         {
@@ -99,7 +104,8 @@ namespace MvcSmartNav
 
     public sealed class NavItem : NavComponentBase, INavItem
     {
-        public NavItem(string name, string targetUrl)
+
+        public NavItem(string name, string targetUrl = "")
             : base(name, targetUrl)
         {
         }
@@ -107,7 +113,7 @@ namespace MvcSmartNav
 
     public sealed class NavRoot : NavComponentBase, INavRoot
     {
-        public NavRoot(string name, string targetUrl)
+        public NavRoot(string name, string targetUrl = "")
             : base(name, targetUrl)
         {
         }

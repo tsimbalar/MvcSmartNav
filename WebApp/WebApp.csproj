@@ -177,6 +177,7 @@
     <Content Include="Views\Navigation\Nav.partial.cshtml" />
     <Content Include="Views\Home\SomePage.cshtml" />
     <Content Include="Views\Home\SomeRestrictedPage.cshtml" />
+    <Content Include="Views\Home\OtherRestrictedPage.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
