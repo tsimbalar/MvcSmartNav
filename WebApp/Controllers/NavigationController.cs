@@ -42,6 +42,9 @@ namespace WebApp.Controllers
             var staticNavItemChild2SubItem = new NavItem("Grand-son", Url.Action("Index", "Home"));
             staticNavItemChild2.AddChild(staticNavItemChild2SubItem);
 
+            var staticNavItemChild2SubItemSubItem = new NavItem("Great Grand-son", "http://www.perdu.com");
+            staticNavItemChild2SubItem.AddChild(staticNavItemChild2SubItemSubItem);
+
 
             // ================= Visibility ===============================
 
@@ -66,7 +69,7 @@ namespace WebApp.Controllers
 
             var childDisabledOfNeverVisibleItem = new NavItem("My father is invisible .. and I'm disabled")
                                                       {
-                                                          EnabilityStrategy = new AlwaysDisabledStrategy()
+                                                          EnablementStrategy = new AlwaysDisabledStrategy()
                                                       };
             visibilityNavChild2NeverVisible.AddChild(childDisabledOfNeverVisibleItem);
 
@@ -86,66 +89,30 @@ namespace WebApp.Controllers
             visibilityNavChild2Visible.AddChild(child2InvisibleOfVisibleItem);
 
 
+            // Enabled / disabled
+            var enablementNavCategory = new NavItem("Enablement Features");
+            root.AddChild(enablementNavCategory);
 
-            //// =================== Other Visibility ==================
+            var enablementNavChild1 = new NavItem("Always disabled")
+                                          {
+                                              EnablementStrategy = new AlwaysDisabledStrategy()
+                                          };
+            enablementNavCategory.AddChild(enablementNavChild1);
 
-            //var child2 = new NavItem("Hidden Home link", Url.Action("Index", "Home"))
-            //                      {
-            //                          Tooltip = "Tooltip of secondElement",
-            //                          VisibilityStrategy = new NeverVisibleStrategy()
-            //                      };
-            //root.AddChild(child2);
+            var enablementNavChild2 = new NavItem("I'am enabled");
+            enablementNavCategory.AddChild(enablementNavChild2);
 
-            //var child2_sub1 = new NavItem("subnav", Url.Action("Contact", "Home"))
-            //                    {
-            //                        Tooltip = "Tooltip of subnav",
-            //                        VisibilityStrategy = new NeverVisibleStrategy()
-            //                    };
-            //child2.AddChild(child2_sub1);
+            var child1DisabledOfEnabledItem = new NavItem("I am disabled")
+                                                  {
+                                                      EnablementStrategy = new AlwaysDisabledStrategy()
+                                                  };
+            enablementNavChild2.AddChild(child1DisabledOfEnabledItem);
 
-            //var child2_sub2 = new NavItem("subnav", Url.Action("Contact", "Home"))
-            //{
-            //    Tooltip = "Tooltip of subnav",
-            //    EnabilityStrategy = new AlwaysDisabledStrategy()
-            //};
-
-            //var child2sub2_sub1 = new NavItem("subsub", Url.Action("About", "Home"))
-            //                          {
-            //                              Tooltip = "rien",
-            //                          };
-            //child2_sub2.AddChild(child2sub2_sub1);
-
-            //child2.AddChild(child2_sub2);
-
-            //var child3 = new NavItem("About link", Url.Action("About", "Home"))
-            //{
-            //    Tooltip = "Tooltip of 3rd Element",
-            //};
-            //root.AddChild(child3);
-
-
-            //var child4 = new NavItem("random link", "http://www.google.fr")
-            //{
-            //    Tooltip = "Tooltip of 4th Element",
-            //    EnabilityStrategy = new AlwaysDisabledStrategy()
-            //};
-
-            //var child4_sub1 = new NavItem("Some link", "http://www.yahoo.com")
-            //{
-            //    Tooltip = "Tooltip of 4.1th Element",
-            //};
-            //child4.AddChild(child4_sub1);
-
-
-            //var child4_sub2 = new NavItem("another link", Url.Action("Index", "Home"))
-            //{
-            //    Tooltip = "Tooltip of 4.2th Element",
-            //    VisibilityStrategy = new NeverVisibleStrategy()
-            //};
-            //child4.AddChild(child4_sub2);
-
-
-            //root.AddChild(child4);
+            var child2DisabledOfEnabledItem = new NavItem("I am disabled too")
+            {
+                EnablementStrategy = new AlwaysDisabledStrategy()
+            };
+            enablementNavChild2.AddChild(child2DisabledOfEnabledItem);
 
             // ================= MVC Nav Items =============================
             var mvcNavItemCategory = new NavItem("MvcNav items", Url.Action("Index", "Home"))

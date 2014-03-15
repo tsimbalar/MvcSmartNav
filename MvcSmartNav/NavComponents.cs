@@ -14,7 +14,7 @@ namespace MvcSmartNav
         private readonly List<INavItem> _children;
         private INavItemActivationStrategy<NavComponentBase> _activationStrategy;
         private INavItemVisibilityStrategy<NavComponentBase> _visibilityStrategy;
-        private INavItemEnabledStrategy<NavComponentBase> _enabilityStrategy;
+        private INavItemEnabledStrategy<NavComponentBase> _enablementStrategy;
         private string _targetUrl;
 
         protected NavComponentBase(string name, string targetUrl = "")
@@ -26,7 +26,7 @@ namespace MvcSmartNav
             _children = new List<INavItem>();
             _activationStrategy = new ExactUrlActivationStrategy();
             _visibilityStrategy = new AlwaysVisibleStrategy();
-            _enabilityStrategy = new AlwaysEnabledStrategy();
+            _enablementStrategy = new AlwaysEnabledStrategy();
 
         }
 
@@ -64,13 +64,13 @@ namespace MvcSmartNav
             }
         }
 
-        public INavItemEnabledStrategy<NavComponentBase> EnabilityStrategy
+        public INavItemEnabledStrategy<NavComponentBase> EnablementStrategy
         {
-            get { return _enabilityStrategy; }
+            get { return _enablementStrategy; }
             set
             {
-                if (value == null) throw new ArgumentNullException("EnabilityStrategy");
-                _enabilityStrategy = value;
+                if (value == null) throw new ArgumentNullException("EnablementStrategy");
+                _enablementStrategy = value;
             }
         }
 
@@ -98,7 +98,7 @@ namespace MvcSmartNav
 
         public NodeEnablement EvaluateEnablement(ViewContext context)
         {
-            return EnabilityStrategy.EvaluateEnablement(this, context);
+            return EnablementStrategy.EvaluateEnablement(this, context);
         }
     }
 
