@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Web.Mvc;
 using MvcSmartNav.Activation;
 using MvcSmartNav.Enablement;
@@ -8,53 +6,18 @@ using MvcSmartNav.Visibility;
 
 namespace MvcSmartNav
 {
-    public abstract class MvcActionNavComponentBase<TController> : INavComponent where TController : IController
+    public abstract class MvcActionNavComponentBase<TController> : NavComponentBase<MvcActionUrlSpecification<TController>> where TController : IController
     {
-        private readonly string _controllerName;
-        private readonly string _actionName;
-        private readonly object _routeValues;
-        private readonly string _name;
         private INavItemActivationStrategy<MvcActionNavComponentBase<TController>> _activationStrategy;
         private INavItemVisibilityStrategy<MvcActionNavComponentBase<TController>> _visibilityStrategy;
-        private INavItemEnabledStrategy<MvcActionNavComponentBase<TController>> _enabilityStrategy;
-        private readonly List<INavItem> _children;
+        private INavItemEnabledStrategy<MvcActionNavComponentBase<TController>> _enablementStrategy;
 
-        protected MvcActionNavComponentBase(string name, string controllerName, string actionName, object routeValues = null)
+        protected MvcActionNavComponentBase(string name, string actionName, object routeValues = null)
+            : base(name, new MvcActionUrlSpecification<TController>(actionName, routeValues))
         {
-            if (name == null) throw new ArgumentNullException("name");
-            _controllerName = controllerName;
-            _actionName = actionName;
-            _routeValues = routeValues;
-            _name = name;
-            _children = new List<INavItem>();
-
-            _activationStrategy = new ExactUrlActivationStrategy();
-            _visibilityStrategy = new AuthorizationVisibleStrategy<TController>();
-            _enabilityStrategy = new AuthorizationEnabledStrategy<TController>();
-        }
-
-
-        public string EvaluateTargetUrl(ViewContext context)
-        {
-            return new UrlHelper(context.RequestContext).Action(ActionName, ControllerName, RouteValues);
-        }
-
-        public string Name { get { return _name; } }
-        public string Tooltip { get; set; }
-
-        public NodeVisibility EvaluateVisibility(ViewContext context)
-        {
-            return VisibilityStrategy.EvaluateVisibility(this, context);
-        }
-
-        public NodeActivation EvaluateActivation(ViewContext context)
-        {
-            return ActivationStrategy.EvaluateActivation(this, context);
-        }
-
-        public NodeEnablement EvaluateEnablement(ViewContext context)
-        {
-            return EnabilityStrategy.EvaluateEnablement(this, context);
+            EnablementStrategy = new AuthorizationEnabledStrategy<TController>();
+            VisibilityStrategy = new AuthorizationVisibleStrategy<TController>();
+            ActivationStrategy = new ExactUrlActivationStrategy();
         }
 
         public INavItemActivationStrategy<MvcActionNavComponentBase<TController>> ActivationStrategy
@@ -77,54 +40,51 @@ namespace MvcSmartNav
             }
         }
 
-        public INavItemEnabledStrategy<MvcActionNavComponentBase<TController>> EnabilityStrategy
+        public INavItemEnabledStrategy<MvcActionNavComponentBase<TController>> EnablementStrategy
         {
-            get { return _enabilityStrategy; }
+            get { return _enablementStrategy; }
             set
             {
-                if (value == null) throw new ArgumentNullException("EnabilityStrategy");
-                _enabilityStrategy = value;
+                if (value == null) throw new ArgumentNullException("EnablementStrategy");
+                _enablementStrategy = value;
             }
         }
 
-
-        public bool HasChildren { get { return _children.Any(); } }
-
-        public IEnumerable<INavItem> Children { get { return _children; } }
-
-        public string ControllerName
+        public override NodeVisibility EvaluateVisibility(ViewContext context)
         {
-            get { return _controllerName; }
+            return VisibilityStrategy.EvaluateVisibility(this, context);
+        }
+
+        public override NodeActivation EvaluateActivation(ViewContext context)
+        {
+            return ActivationStrategy.EvaluateActivation(this, context);
+        }
+
+        public override NodeEnablement EvaluateEnablement(ViewContext context)
+        {
+            return EnablementStrategy.EvaluateEnablement(this, context);
         }
 
         public string ActionName
         {
-            get { return _actionName; }
-        }
-
-        public object RouteValues
-        {
-            get { return _routeValues; }
-        }
-
-
-        public void AddChild(INavItem child)
-        {
-            _children.Add(child);
+            get { return TargetUrlSpecification.ActionName; }
         }
     }
 
 
     public sealed class MvcActionNavItem<TController> : MvcActionNavComponentBase<TController>, INavItem where TController : IController
     {
-        public MvcActionNavItem(string name, string controllerName, string actionName, object routeValues = null) : base(name, controllerName, actionName, routeValues)
+        public MvcActionNavItem(string name, string actionName, object routeValues = null)
+            : base(name, actionName, routeValues)
         {
+
         }
     }
 
     public sealed class MvcActionNavRoot<TController> : MvcActionNavComponentBase<TController>, INavRoot where TController : IController
     {
-        public MvcActionNavRoot(string name, string controllerName, string actionName, object routeValues = null) : base(name, controllerName, actionName, routeValues)
+        public MvcActionNavRoot(string name, string actionName, object routeValues = null)
+            : base(name, actionName, routeValues)
         {
         }
     }
