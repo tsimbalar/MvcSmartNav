@@ -2,7 +2,7 @@ using System;
 
 namespace MvcSmartNav.Visibility
 {
-    public class NodeVisibility
+    public sealed class NodeVisibility
     {
         private readonly bool _visible;
         private readonly string _reason;

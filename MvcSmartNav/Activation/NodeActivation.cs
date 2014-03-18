@@ -2,7 +2,7 @@ using System;
 
 namespace MvcSmartNav.Activation
 {
-    public class NodeActivation
+    public sealed class NodeActivation
     {
         private readonly bool _isActive;
         private readonly string _reason;

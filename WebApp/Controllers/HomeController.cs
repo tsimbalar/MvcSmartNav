@@ -1,5 +1,5 @@
 ﻿using System.Web.Mvc;
-using MvcSmartNav;
+using MvcSmartNav.Attributes;
 
 namespace WebApp.Controllers
 {

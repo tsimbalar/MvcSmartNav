@@ -21,4 +21,12 @@ namespace MvcSmartNav.ViewModels
         public INavRootViewModel NavigationRoot { get { return _root; } }
 
     }
+
+    public sealed class NavTreeViewModel : NavTreeViewModelBase
+    {
+        public NavTreeViewModel(ViewContext callingContext, INavRootViewModel root)
+            : base(callingContext, root)
+        {
+        }
+    }
 }

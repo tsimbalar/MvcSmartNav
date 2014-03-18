@@ -1,10 +1,10 @@
 using System.Web.Mvc;
-using MvcSmartNav.Enablement;
+using MvcSmartNav.Attributes;
 using MvcSmartNav.Helpers;
 
 namespace MvcSmartNav.Visibility
 {
-    public class AuthorizationVisibleStrategy<TController> : INavItemVisibilityStrategy<MvcActionNavComponentBase<TController>> where TController : IController
+    public sealed class AuthorizationVisibleStrategy<TController> : INavItemVisibilityStrategy<MvcActionNavComponentBase<TController>> where TController : IController
     {
         public NodeVisibility EvaluateVisibility(MvcActionNavComponentBase<TController> navComponent, ViewContext context)
         {

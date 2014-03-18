@@ -1,7 +1,6 @@
 using System.Web.Mvc;
-using MvcSmartNav.Visibility;
 
-namespace MvcSmartNav
+namespace MvcSmartNav.Visibility
 {
     public interface INavItemVisibilityStrategy<in TNavComponent> where TNavComponent : INavComponent
     {

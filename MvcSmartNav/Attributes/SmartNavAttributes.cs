@@ -3,7 +3,7 @@ using System.Web.Mvc;
 using MvcSmartNav.Enablement;
 using MvcSmartNav.Visibility;
 
-namespace MvcSmartNav
+namespace MvcSmartNav.Attributes
 {
 
     public interface ISmartNavEnabledAttribute
@@ -21,7 +21,7 @@ namespace MvcSmartNav
     /// <summary>
     /// Trying to look like the MVC AuthorizeAttribute
     /// </summary>
-    public class SmartNavAuthorize : AuthorizeAttribute, ISmartNavEnabledAttribute, ISmartNavVisibleAttribute
+    public sealed class SmartNavAuthorize : AuthorizeAttribute, ISmartNavEnabledAttribute, ISmartNavVisibleAttribute
     {
         public SmartNavAuthorize()
         {

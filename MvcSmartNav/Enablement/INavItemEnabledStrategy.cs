@@ -1,7 +1,6 @@
 using System.Web.Mvc;
-using MvcSmartNav.Enablement;
 
-namespace MvcSmartNav
+namespace MvcSmartNav.Enablement
 {
     public interface INavItemEnabledStrategy<in TNavComponent> where TNavComponent : INavComponent
     {

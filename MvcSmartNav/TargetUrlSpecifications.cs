@@ -3,7 +3,12 @@ using System.Web.Mvc;
 
 namespace MvcSmartNav
 {
-    public class StaticUrlSpecification : ITargetUrlSpecification
+    public interface ITargetUrlSpecification
+    {
+        string EvaluateTargetUrl(ViewContext context);
+    }
+
+    public sealed class StaticUrlSpecification : ITargetUrlSpecification
     {
         private readonly string _targetUrl;
 
@@ -19,7 +24,7 @@ namespace MvcSmartNav
         }
     }
 
-    public class MvcActionUrlSpecification<TController> : ITargetUrlSpecification where TController : IController
+    public sealed class MvcActionUrlSpecification<TController> : ITargetUrlSpecification where TController : IController
     {
         private readonly string _actionName;
         private readonly object _routeValues;
@@ -33,7 +38,7 @@ namespace MvcSmartNav
 
         public string EvaluateTargetUrl(ViewContext context)
         {
-            string controllerName = ControllerName; 
+            string controllerName = ControllerName;
             return new UrlHelper(context.RequestContext).Action(ActionName, controllerName, RouteValues);
         }
 
@@ -41,7 +46,7 @@ namespace MvcSmartNav
         {
             get
             {
-                var controllerTypeName = typeof (TController).Name;
+                var controllerTypeName = typeof(TController).Name;
                 return controllerTypeName.Substring(0, controllerTypeName.Length - "Controller".Length);
             }
         }

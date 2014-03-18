@@ -19,4 +19,12 @@ namespace MvcSmartNav.ViewModels
 
         string ToolTip { get; }
     }
+
+    public interface INavRootViewModel : INavComponentViewModel
+    {
+    }
+
+    public interface INavItemViewModel : INavComponentViewModel
+    {
+    }
 }

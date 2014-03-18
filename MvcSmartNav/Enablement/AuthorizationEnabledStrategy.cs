@@ -1,10 +1,11 @@
 ﻿using System.Web.Mvc;
+using MvcSmartNav.Attributes;
 using MvcSmartNav.Helpers;
 
 namespace MvcSmartNav.Enablement
 {
 
-    public class AuthorizationEnabledStrategy<TController> : INavItemEnabledStrategy<MvcActionNavComponentBase<TController>> where TController : IController
+    public sealed class AuthorizationEnabledStrategy<TController> : INavItemEnabledStrategy<MvcActionNavComponentBase<TController>> where TController : IController
     {
 
         public NodeEnablement EvaluateEnablement(MvcActionNavComponentBase<TController> navComponent, ViewContext context)

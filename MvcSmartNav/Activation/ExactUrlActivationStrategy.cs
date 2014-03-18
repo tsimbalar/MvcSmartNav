@@ -2,7 +2,7 @@ using System.Web.Mvc;
 
 namespace MvcSmartNav.Activation
 {
-    public class ExactUrlActivationStrategy : INavItemActivationStrategy<INavComponent>
+    public sealed class ExactUrlActivationStrategy : INavItemActivationStrategy<INavComponent>
     {
         public NodeActivation EvaluateActivation(INavComponent navComponent, ViewContext context)
         {

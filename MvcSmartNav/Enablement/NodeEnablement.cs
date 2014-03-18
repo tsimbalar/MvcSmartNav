@@ -2,7 +2,7 @@ using System;
 
 namespace MvcSmartNav.Enablement
 {
-    public class NodeEnablement
+    public sealed class NodeEnablement
     {
         private readonly bool _disabled;
         private readonly string _reason;
