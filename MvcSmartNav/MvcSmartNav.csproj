@@ -69,6 +69,7 @@
     <Compile Include="Enablement\AlwaysEnabledStrategy.cs" />
     <Compile Include="Enablement\AuthorizationEnabledStrategy.cs" />
     <Compile Include="Helpers\HtmlHelperNavDebugExtensions.cs" />
+    <Compile Include="Helpers\NavComponentsExtensions.cs" />
     <Compile Include="Helpers\ReflectionHelper.cs" />
     <Compile Include="TargetUrlSpecifications.cs" />
     <Compile Include="MvcActionNavComponents.cs" />
