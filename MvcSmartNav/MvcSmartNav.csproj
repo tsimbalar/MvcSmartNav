@@ -75,7 +75,7 @@
     <Compile Include="MvcActionNavComponents.cs" />
     <Compile Include="NavComponentBase.cs" />
     <Compile Include="NavStaticComponents.cs" />
-    <Compile Include="Attributes\SmartNavAttributes.cs" />
+    <Compile Include="Attributes\SmartNavAuthorizeWrapper.cs" />
     <Compile Include="Visibility\AlwaysVisibleStrategy.cs" />
     <Compile Include="ViewModels\NavComponentViewModels.cs" />
     <Compile Include="ViewModels\NavTreeViewModels.cs" />

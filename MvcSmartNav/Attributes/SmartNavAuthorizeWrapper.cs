@@ -1,26 +1,13 @@
 using System;
 using System.Reflection;
 using System.Web.Mvc;
-using System.Web.Security;
 using MvcSmartNav.Enablement;
 using MvcSmartNav.Visibility;
 
 namespace MvcSmartNav.Attributes
 {
 
-    public interface ISmartNavEnabledAttribute
-    {
-        NodeEnablement EvaluateEnablement(ViewContext callingViewContext);
-
-    }
-
-    public interface ISmartNavVisibleAttribute
-    {
-        NodeVisibility EvaluateVisibility(ViewContext callingViewContext);
-
-    }
-
-    public class SmartNavAuthorizeWrapper : ISmartNavEnabledAttribute, ISmartNavVisibleAttribute
+    internal class SmartNavAuthorizeWrapper
     {
         private readonly AuthorizeAttribute _wrapped;
 
