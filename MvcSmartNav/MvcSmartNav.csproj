@@ -67,7 +67,7 @@
   <ItemGroup>
     <Compile Include="Enablement\AlwaysDisabledStrategy.cs" />
     <Compile Include="Enablement\AlwaysEnabledStrategy.cs" />
-    <Compile Include="Enablement\AuthorizationEnabledStrategy.cs" />
+    <Compile Include="Enablement\AuthorizeAttributeEnabledStrategy.cs" />
     <Compile Include="Helpers\HtmlHelperNavDebugExtensions.cs" />
     <Compile Include="Helpers\NavComponentsExtensions.cs" />
     <Compile Include="Helpers\ReflectionHelper.cs" />
@@ -86,7 +86,7 @@
     <Compile Include="Enablement\INavItemEnabledStrategy.cs" />
     <Compile Include="Visibility\INavItemVisibilityStrategy.cs" />
     <Compile Include="NavBuilder.cs" />
-    <Compile Include="Visibility\AuthorizationVisibleStrategy.cs" />
+    <Compile Include="Visibility\AuthorizeAttributeVisibleStrategy.cs" />
     <Compile Include="Visibility\NeverVisibleStrategy.cs" />
     <Compile Include="Activation\NodeActivation.cs" />
     <Compile Include="Enablement\NodeEnablement.cs" />

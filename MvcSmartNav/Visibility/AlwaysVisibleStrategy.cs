@@ -9,4 +9,12 @@ namespace MvcSmartNav.Visibility
             return new NodeVisibility(true, "Always visible");
         }
     }
+
+    public sealed class AlwaysVisibleStrategy<TController> : INavItemVisibilityStrategy<MvcActionNavComponentBase<TController>> where TController : IController
+    {
+        public NodeVisibility EvaluateVisibility(MvcActionNavComponentBase<TController> navComponent, ViewContext context)
+        {
+            return new NodeVisibility(true, "Always visible");
+        }
+    }
 }

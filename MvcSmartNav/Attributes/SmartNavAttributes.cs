@@ -1,5 +1,7 @@
 using System;
+using System.Reflection;
 using System.Web.Mvc;
+using System.Web.Security;
 using MvcSmartNav.Enablement;
 using MvcSmartNav.Visibility;
 
@@ -18,41 +20,41 @@ namespace MvcSmartNav.Attributes
 
     }
 
-    /// <summary>
-    /// Trying to look like the MVC AuthorizeAttribute
-    /// </summary>
-    public sealed class SmartNavAuthorize : AuthorizeAttribute, ISmartNavEnabledAttribute, ISmartNavVisibleAttribute
+    public class SmartNavAuthorizeWrapper : ISmartNavEnabledAttribute, ISmartNavVisibleAttribute
     {
-        public SmartNavAuthorize()
+        private readonly AuthorizeAttribute _wrapped;
+
+        public SmartNavAuthorizeWrapper(AuthorizeAttribute wrapped)
         {
-            WhenUnauthorized = SmartNavAttributeMode.Disable;
+            if (wrapped == null) throw new ArgumentNullException("wrapped");
+            _wrapped = wrapped;
         }
 
-        public SmartNavAttributeMode WhenUnauthorized { get; set; }
 
         private Tuple<bool, string> IsAuthorized(ViewContext callingViewContext)
         {
-            var authorized = this.AuthorizeCore(callingViewContext.HttpContext);
-            if (authorized)
+            // try to invoke AuthorizeCore on the AuthorizeAttribute ... Reflection, booooh
+            
+            var authorizeCoreMethod = typeof (AuthorizeAttribute).GetMethod("AuthorizeCore",
+                BindingFlags.Instance | BindingFlags.NonPublic);
+            if (authorizeCoreMethod == null)
             {
-                return Tuple.Create(true, "User is authorized");
+                throw new InvalidOperationException("Could not find the protected method AuthorizeCore sur AuthorizeAttribute ... maybe the ASP.NET MVC team have changed something ....");
             }
-            else
-            {
-                return Tuple.Create(false,
-                                    string.Format(
-                                        "not authorized according to SmartNavAuthorize (Roles = {0}, Users = {1})",
-                                        Roles, Users));
-            }
+            var authorizedObject = authorizeCoreMethod.Invoke(this._wrapped, new object[]{callingViewContext.HttpContext});
+            var authorized = Convert.ToBoolean(authorizedObject);
+
+            return Tuple.Create(authorized, String.Format(
+                "User is {0} according to AuthorizeAttribute (Roles = {1}, Users = {2})",
+                authorized ? "authorized" : "not authorized",
+                _wrapped.Roles,
+                _wrapped.Users
+                ));
         }
 
 
         public NodeEnablement EvaluateEnablement(ViewContext callingViewContext)
         {
-            if (WhenUnauthorized != SmartNavAttributeMode.Disable)
-            {
-                return new NodeEnablement(false, "SmartNavAuthorize(WhenUnauthorized <> Disable)");
-            }
             var authorizedTuple = IsAuthorized(callingViewContext);
             bool authorized = authorizedTuple.Item1;
             string reason = authorizedTuple.Item2;
@@ -61,20 +63,10 @@ namespace MvcSmartNav.Attributes
 
         public NodeVisibility EvaluateVisibility(ViewContext callingViewContext)
         {
-            if (WhenUnauthorized != SmartNavAttributeMode.Hide)
-            {
-                return new NodeVisibility(true, "SmartNavAuthorize(WhenUnauthorized <> Hide)");
-            }
             var authorizedTuple = IsAuthorized(callingViewContext);
             bool authorized = authorizedTuple.Item1;
             string reason = authorizedTuple.Item2;
             return new NodeVisibility(visible: authorized, reason: reason);
         }
-    }
-
-    public enum SmartNavAttributeMode
-    {
-        Disable = 1,
-        Hide = 2
     }
 }

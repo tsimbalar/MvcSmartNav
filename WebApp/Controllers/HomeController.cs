@@ -31,14 +31,14 @@ namespace WebApp.Controllers
             return View();
         }
 
-        [SmartNavAuthorize(WhenUnauthorized = SmartNavAttributeMode.Disable)]
+        [Authorize(Users = "sa")]
         public ViewResult SomeRestrictedPage()
         {
             ViewBag.Message = "Some VIP page";
             return View();
         }
 
-        [SmartNavAuthorize(WhenUnauthorized = SmartNavAttributeMode.Hide)]
+        [Authorize(Roles="Administrators")]
         public ViewResult OtherRestrictedPage()
         {
             ViewBag.Message = "Some VIP page 2";

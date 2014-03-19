@@ -46,6 +46,20 @@ namespace MvcSmartNav.Helpers
             self.AddChild(child);
             return self;
         }
+
+        public static MvcActionNavItem<TController> DisabledWhenNotAuthorized<TController>(this MvcActionNavItem<TController> self)
+            where TController : IController
+        {
+            self.EnablementStrategy = new AuthorizeAttributeEnabledStrategy<TController>();
+            return self;
+        }
+
+        public static MvcActionNavItem<TController> HiddenWhenNotAuthorized<TController>(this MvcActionNavItem<TController> self)
+            where TController : IController
+        {
+            self.VisibilityStrategy = new AuthorizeAttributeVisibleStrategy<TController>();
+            return self;
+        }
         
     }
 }

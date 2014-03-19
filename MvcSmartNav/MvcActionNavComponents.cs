@@ -15,8 +15,8 @@ namespace MvcSmartNav
         protected MvcActionNavComponentBase(string name, string actionName, object routeValues = null)
             : base(name, new MvcActionUrlSpecification<TController>(actionName, routeValues))
         {
-            EnablementStrategy = new AuthorizationEnabledStrategy<TController>();
-            VisibilityStrategy = new AuthorizationVisibleStrategy<TController>();
+            VisibilityStrategy = new AlwaysVisibleStrategy<TController>();
+            EnablementStrategy = new AlwaysEnabledStrategy<TController>();
             ActivationStrategy = new ExactUrlActivationStrategy();
         }
 

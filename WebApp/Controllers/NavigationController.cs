@@ -93,10 +93,12 @@ namespace WebApp.Controllers
                     .WithToolTip("using Mvc specific stuff")
                     .WithChild(
                         new MvcActionNavItem<HomeController>("Restricted Page", "SomeRestrictedPage")
-                            .WithToolTip("Some super secret Page (will disable if not allowed)"))
+                            .WithToolTip("Some super secret Page (will disable if not allowed)")
+                            .DisabledWhenNotAuthorized())
                     .WithChild(
                         new MvcActionNavItem<HomeController>("Other Restricted Page", "OtherRestrictedPage")
                             .WithToolTip("Some super secret Page (will hide if not allowed)")
+                            .HiddenWhenNotAuthorized()
                             .WithChild(
                                 new MvcActionNavItem<HomeController>("Non restricted page", "SomePage")
                             )
