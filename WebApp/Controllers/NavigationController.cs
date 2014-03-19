@@ -88,25 +88,24 @@ namespace WebApp.Controllers
             );
 
             // ================= MVC Nav Items =============================
-            var mvcNavItemCategory = new NavStaticItem("MvcNav items", Url.Action("Index", "Home"))
-                .WithToolTip("using Mvc specific stuff");
-            root.AddChild(mvcNavItemCategory);
-
-
-            var mvcNavItemChild1 = new MvcActionNavItem<HomeController>("Restricted Page", "SomeRestrictedPage")
-                .WithToolTip("Some super secret Page (will disable if not allowed)");
-            mvcNavItemCategory.AddChild(mvcNavItemChild1);
-
-            var mvcNavItemChild2 = new MvcActionNavItem<HomeController>("Other Restricted Page", "OtherRestrictedPage")
-            .WithToolTip("Some super secret Page (will hide if not allowed)");
-            mvcNavItemCategory.AddChild(mvcNavItemChild2);
-
+            root.AddChild(
+                new NavStaticItem("MvcNav items", Url.Action("Index", "Home"))
+                    .WithToolTip("using Mvc specific stuff")
+                    .WithChild(
+                        new MvcActionNavItem<HomeController>("Restricted Page", "SomeRestrictedPage")
+                            .WithToolTip("Some super secret Page (will disable if not allowed)"))
+                    .WithChild(
+                        new MvcActionNavItem<HomeController>("Other Restricted Page", "OtherRestrictedPage")
+                            .WithToolTip("Some super secret Page (will hide if not allowed)")
+                            .WithChild(
+                                new MvcActionNavItem<HomeController>("Non restricted page", "SomePage")
+                            )
+                    )
+            );
 
 
             var model = new NavBuilder().Build(callingContext, root);
-
             return PartialView("Nav.partial", model);
         }
     }
-
 }

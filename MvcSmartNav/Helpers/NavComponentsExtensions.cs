@@ -40,7 +40,12 @@ namespace MvcSmartNav.Helpers
             return self;
         }
 
-
+        public static MvcActionNavItem<TController> WithChild<TController>(this MvcActionNavItem<TController> self, INavItem child)
+            where TController : IController
+        {
+            self.AddChild(child);
+            return self;
+        }
         
     }
 }
