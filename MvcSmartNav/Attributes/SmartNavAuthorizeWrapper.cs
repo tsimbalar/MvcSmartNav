@@ -2,6 +2,7 @@ using System;
 using System.Reflection;
 using System.Web.Mvc;
 using MvcSmartNav.Enablement;
+using MvcSmartNav.Helpers;
 using MvcSmartNav.Visibility;
 
 namespace MvcSmartNav.Attributes
@@ -21,14 +22,7 @@ namespace MvcSmartNav.Attributes
         private Tuple<bool, string> IsAuthorized(ViewContext callingViewContext)
         {
             // try to invoke AuthorizeCore on the AuthorizeAttribute ... Reflection, booooh
-            
-            var authorizeCoreMethod = typeof (AuthorizeAttribute).GetMethod("AuthorizeCore",
-                BindingFlags.Instance | BindingFlags.NonPublic);
-            if (authorizeCoreMethod == null)
-            {
-                throw new InvalidOperationException("Could not find the protected method AuthorizeCore in AuthorizeAttribute ... maybe the ASP.NET MVC team have changed something ....");
-            }
-            var authorizedObject = authorizeCoreMethod.Invoke(this._wrapped, new object[]{callingViewContext.HttpContext});
+            var authorizedObject = ReflectionHelper.InvokeNonPublicInstanceMethod(this._wrapped, "AuthorizeCore", new object[] { callingViewContext.HttpContext });
             var authorized = Convert.ToBoolean(authorizedObject);
 
             return Tuple.Create(authorized, String.Format(
