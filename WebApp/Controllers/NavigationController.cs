@@ -10,7 +10,7 @@ namespace WebApp.Controllers
     public class NavigationController : Controller
     {
         [ChildActionOnly] // not called directly !
-        public ActionResult GenerateNav(ViewContext callingContext)
+        public PartialViewResult GenerateNav(ViewContext callingContext)
         {
             var root = new NavStaticRoot("NAVIGATION ROOT (home)", Url.Action("Index", "Home"))
                 .WithToolTip("Home of the web site");

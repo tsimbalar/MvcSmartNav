@@ -15,6 +15,7 @@ namespace MvcSmartNav.Helpers
         {
             if (controllerType == null) throw new ArgumentNullException("controllerType");
             if (actionName == null) throw new ArgumentNullException("actionName");
+
             var controllerDescriptor = new ReflectedControllerDescriptor(controllerType);
             var action = controllerDescriptor.FindAction(new ControllerContext(), actionName);
 
