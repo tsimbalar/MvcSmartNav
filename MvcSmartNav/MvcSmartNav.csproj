@@ -71,6 +71,7 @@
     <Compile Include="Helpers\HtmlHelperNavDebugExtensions.cs" />
     <Compile Include="Helpers\NavComponentsExtensions.cs" />
     <Compile Include="Helpers\ReflectionHelper.cs" />
+    <Compile Include="JetBrainsAnnotations.cs" />
     <Compile Include="TargetUrlSpecifications.cs" />
     <Compile Include="MvcActionNavComponents.cs" />
     <Compile Include="NavComponentBase.cs" />

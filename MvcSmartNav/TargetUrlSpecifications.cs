@@ -1,5 +1,6 @@
 using System;
 using System.Web.Mvc;
+using JetBrains.Annotations;
 
 namespace MvcSmartNav
 {
@@ -29,7 +30,7 @@ namespace MvcSmartNav
         private readonly string _actionName;
         private readonly object _routeValues;
 
-        public MvcActionUrlSpecification(string actionName, object routeValues = null)
+        public MvcActionUrlSpecification([AspMvcActionSelector] string actionName, object routeValues = null)
         {
             if (actionName == null) throw new ArgumentNullException("actionName");
             _actionName = actionName;

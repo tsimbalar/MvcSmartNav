@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Web.Mvc;
+using JetBrains.Annotations;
 using MvcSmartNav.Activation;
 using MvcSmartNav.Enablement;
 using MvcSmartNav.Visibility;
@@ -12,7 +13,7 @@ namespace MvcSmartNav
         private INavItemVisibilityStrategy<MvcActionNavComponentBase<TController>> _visibilityStrategy;
         private INavItemEnabledStrategy<MvcActionNavComponentBase<TController>> _enablementStrategy;
 
-        protected MvcActionNavComponentBase(string name, string actionName, object routeValues = null)
+        protected MvcActionNavComponentBase(string name, [AspMvcActionSelector] string actionName, object routeValues = null)
             : base(name, new MvcActionUrlSpecification<TController>(actionName, routeValues))
         {
             VisibilityStrategy = new AlwaysVisibleStrategy<TController>();
@@ -74,7 +75,7 @@ namespace MvcSmartNav
 
     public sealed class MvcActionNavItem<TController> : MvcActionNavComponentBase<TController>, INavItem where TController : IController
     {
-        public MvcActionNavItem(string name, string actionName, object routeValues = null)
+        public MvcActionNavItem(string name, [AspMvcActionSelector] string actionName, object routeValues = null)
             : base(name, actionName, routeValues)
         {
 
@@ -83,7 +84,7 @@ namespace MvcSmartNav
 
     public sealed class MvcActionNavRoot<TController> : MvcActionNavComponentBase<TController>, INavRoot where TController : IController
     {
-        public MvcActionNavRoot(string name, string actionName, object routeValues = null)
+        public MvcActionNavRoot(string name, [AspMvcActionSelector] string actionName, object routeValues = null)
             : base(name, actionName, routeValues)
         {
         }
