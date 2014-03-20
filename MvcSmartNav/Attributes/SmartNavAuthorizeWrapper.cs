@@ -26,7 +26,7 @@ namespace MvcSmartNav.Attributes
                 BindingFlags.Instance | BindingFlags.NonPublic);
             if (authorizeCoreMethod == null)
             {
-                throw new InvalidOperationException("Could not find the protected method AuthorizeCore sur AuthorizeAttribute ... maybe the ASP.NET MVC team have changed something ....");
+                throw new InvalidOperationException("Could not find the protected method AuthorizeCore in AuthorizeAttribute ... maybe the ASP.NET MVC team have changed something ....");
             }
             var authorizedObject = authorizeCoreMethod.Invoke(this._wrapped, new object[]{callingViewContext.HttpContext});
             var authorized = Convert.ToBoolean(authorizedObject);

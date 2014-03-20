@@ -1,5 +1,4 @@
-﻿using System.Web.Mvc;
-using MvcSmartNav.Enablement;
+﻿using MvcSmartNav.Enablement;
 using MvcSmartNav.Visibility;
 
 namespace MvcSmartNav.Helpers
@@ -33,31 +32,27 @@ namespace MvcSmartNav.Helpers
             return self;
         }
 
-        public static MvcActionNavItem<TController> WithToolTip<TController>(this MvcActionNavItem<TController> self, string tooltip)
-            where TController : IController
+        public static MvcActionNavItem WithToolTip(this MvcActionNavItem self, string tooltip)
         {
             self.Tooltip = tooltip;
             return self;
         }
 
-        public static MvcActionNavItem<TController> WithChild<TController>(this MvcActionNavItem<TController> self, INavItem child)
-            where TController : IController
+        public static MvcActionNavItem WithChild(this MvcActionNavItem self, INavItem child)
         {
             self.AddChild(child);
             return self;
         }
 
-        public static MvcActionNavItem<TController> DisabledWhenNotAuthorized<TController>(this MvcActionNavItem<TController> self)
-            where TController : IController
+        public static MvcActionNavItem DisabledWhenNotAuthorized(this MvcActionNavItem self)
         {
-            self.EnablementStrategy = new AuthorizeAttributeEnabledStrategy<TController>();
+            self.EnablementStrategy = new AuthorizeAttributeEnabledStrategy();
             return self;
         }
 
-        public static MvcActionNavItem<TController> HiddenWhenNotAuthorized<TController>(this MvcActionNavItem<TController> self)
-            where TController : IController
+        public static MvcActionNavItem HiddenWhenNotAuthorized(this MvcActionNavItem self)
         {
-            self.VisibilityStrategy = new AuthorizeAttributeVisibleStrategy<TController>();
+            self.VisibilityStrategy = new AuthorizeAttributeVisibleStrategy();
             return self;
         }
         

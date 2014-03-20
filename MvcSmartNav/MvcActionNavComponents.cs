@@ -7,21 +7,21 @@ using MvcSmartNav.Visibility;
 
 namespace MvcSmartNav
 {
-    public abstract class MvcActionNavComponentBase<TController> : NavComponentBase<MvcActionUrlSpecification<TController>> where TController : IController
+    public abstract class MvcActionNavComponentBase : NavComponentBase<MvcActionUrlSpecification>
     {
-        private INavItemActivationStrategy<MvcActionNavComponentBase<TController>> _activationStrategy;
-        private INavItemVisibilityStrategy<MvcActionNavComponentBase<TController>> _visibilityStrategy;
-        private INavItemEnabledStrategy<MvcActionNavComponentBase<TController>> _enablementStrategy;
+        private INavItemActivationStrategy<MvcActionNavComponentBase> _activationStrategy;
+        private INavItemVisibilityStrategy<MvcActionNavComponentBase> _visibilityStrategy;
+        private INavItemEnabledStrategy<MvcActionNavComponentBase> _enablementStrategy;
 
-        protected MvcActionNavComponentBase(string name, [AspMvcActionSelector] string actionName, object routeValues = null)
-            : base(name, new MvcActionUrlSpecification<TController>(actionName, routeValues))
+        protected MvcActionNavComponentBase(string name, [AspMvcController] string controllerName, [AspMvcActionSelector] string actionName, object routeValues = null)
+            : base(name, new MvcActionUrlSpecification(controllerName, actionName, routeValues))
         {
-            VisibilityStrategy = new AlwaysVisibleStrategy<TController>();
-            EnablementStrategy = new AlwaysEnabledStrategy<TController>();
+            VisibilityStrategy = new AlwaysVisibleStrategy();
+            EnablementStrategy = new AlwaysEnabledStrategy();
             ActivationStrategy = new ExactUrlActivationStrategy();
         }
 
-        public INavItemActivationStrategy<MvcActionNavComponentBase<TController>> ActivationStrategy
+        public INavItemActivationStrategy<MvcActionNavComponentBase> ActivationStrategy
         {
             get { return _activationStrategy; }
             set
@@ -31,7 +31,7 @@ namespace MvcSmartNav
             }
         }
 
-        public INavItemVisibilityStrategy<MvcActionNavComponentBase<TController>> VisibilityStrategy
+        public INavItemVisibilityStrategy<MvcActionNavComponentBase> VisibilityStrategy
         {
             get { return _visibilityStrategy; }
             set
@@ -41,7 +41,7 @@ namespace MvcSmartNav
             }
         }
 
-        public INavItemEnabledStrategy<MvcActionNavComponentBase<TController>> EnablementStrategy
+        public INavItemEnabledStrategy<MvcActionNavComponentBase> EnablementStrategy
         {
             get { return _enablementStrategy; }
             set
@@ -70,22 +70,25 @@ namespace MvcSmartNav
         {
             get { return TargetUrlSpecification.ActionName; }
         }
-    }
 
-
-    public sealed class MvcActionNavItem<TController> : MvcActionNavComponentBase<TController>, INavItem where TController : IController
-    {
-        public MvcActionNavItem(string name, [AspMvcActionSelector] string actionName, object routeValues = null)
-            : base(name, actionName, routeValues)
+        public string ControllerName
         {
-
+            get { return TargetUrlSpecification.ControllerName; }
         }
     }
 
-    public sealed class MvcActionNavRoot<TController> : MvcActionNavComponentBase<TController>, INavRoot where TController : IController
+
+    public sealed class MvcActionNavItem : MvcActionNavComponentBase, INavItem
     {
-        public MvcActionNavRoot(string name, [AspMvcActionSelector] string actionName, object routeValues = null)
-            : base(name, actionName, routeValues)
+        public MvcActionNavItem(string name, [AspMvcController] string controllerName, [AspMvcActionSelector] string actionName, object routeValues = null) : base(name, controllerName, actionName, routeValues)
+        {
+        }
+    }
+
+    public sealed class MvcActionNavRoot : MvcActionNavComponentBase, INavRoot
+    {
+        public MvcActionNavRoot(string name, [AspMvcController] string controllerName, [AspMvcActionSelector] string actionName, object routeValues = null)
+            : base(name, controllerName, actionName, routeValues)
         {
         }
     }

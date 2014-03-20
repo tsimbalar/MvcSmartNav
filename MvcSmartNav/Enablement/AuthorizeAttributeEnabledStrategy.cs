@@ -1,17 +1,19 @@
-﻿using System.Web.Mvc;
+﻿using System;
+using System.Web.Mvc;
 using MvcSmartNav.Attributes;
 using MvcSmartNav.Helpers;
 
 namespace MvcSmartNav.Enablement
 {
 
-    public sealed class AuthorizeAttributeEnabledStrategy<TController> : INavItemEnabledStrategy<MvcActionNavComponentBase<TController>> where TController : IController
+    public sealed class AuthorizeAttributeEnabledStrategy : INavItemEnabledStrategy<MvcActionNavComponentBase>
     {
 
-        public NodeEnablement EvaluateEnablement(MvcActionNavComponentBase<TController> navComponent, ViewContext context)
+        public NodeEnablement EvaluateEnablement(MvcActionNavComponentBase navComponent, ViewContext context)
         {
-
-            var attribute = ReflectionHelper.GetActionAttribute<TController, AuthorizeAttribute>(navComponent.ActionName);
+            var controllerName = navComponent.ControllerName;
+            Type controllerType = ReflectionHelper.GetControllerTypeFromName(context.RequestContext, controllerName);
+            var attribute = ReflectionHelper.GetActionAttribute<AuthorizeAttribute>(controllerType, navComponent.ActionName);
             if (attribute == null)
             {
                 return new NodeEnablement(disabled: false, reason: "no AuthorizeAttribute attribute");

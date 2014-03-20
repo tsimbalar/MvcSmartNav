@@ -10,13 +10,4 @@ namespace MvcSmartNav.Enablement
             return new NodeEnablement(false, "Always enabled");
         }
     }
-
-
-    public sealed class AlwaysEnabledStrategy<TController> : INavItemEnabledStrategy<MvcActionNavComponentBase<TController>> where TController : IController
-    {
-        public NodeEnablement EvaluateEnablement(MvcActionNavComponentBase<TController> navComponent, ViewContext context)
-        {
-            return new NodeEnablement(false, "Always enabled");
-        }
-    }
 }
