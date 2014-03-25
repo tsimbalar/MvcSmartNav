@@ -75,17 +75,14 @@ namespace WebApp.Controllers
             root.AddChild(
                 new NavStaticItem("MvcNav items", Url.Action("Index", "Home"))
                     .WithToolTip("using Mvc specific stuff")
-                    .WithChild(
-                        new MvcActionNavItem("Restricted Page", "Home", "SomeRestrictedPage")
-                            .WithToolTip("Some super secret Page (will disable if not allowed)")
+                    .WithMvcChild<NavStaticItem, StaticUrlSpecification>("Restricted Page", "Home", "SomeRestrictedPage", null, c=> 
+                            c.WithToolTip("Some super secret Page (will disable if not allowed)")
                             .DisabledWhenNotAuthorized())
-                    .WithChild(
-                        new MvcActionNavItem("Other Restricted Page", "Home", "OtherRestrictedPage")
-                            .WithToolTip("Some super secret Page (will hide if not allowed)")
+                    .WithMvcChild<NavStaticItem, StaticUrlSpecification>("Other Restricted Page", "Home", "OtherRestrictedPage", null, c => 
+                            c.WithToolTip("Some super secret Page (will hide if not allowed)")
                             .HiddenWhenNotAuthorized()
-                            .WithChild(
-                                new MvcActionNavItem("Non restricted page", "Home", "SomePage")
-                            )
+                            .WithMvcChild<MvcActionNavItem, MvcActionUrlSpecification>("Non restricted page", "Home", "SomePage")
+                            
                     )
             );
 

@@ -6,11 +6,22 @@ namespace MvcSmartNav.Helpers
 {
     public static class NavComponentsExtensions
     {
+        #region ToolTip
+
         public static TNavComponent WithToolTip<TNavComponent>(this TNavComponent self, string tooltip) where TNavComponent : NavStaticComponentBase
         {
             self.Tooltip = tooltip;
             return self;
         }
+
+        public static MvcActionNavItem WithToolTip(this MvcActionNavItem self, string tooltip)
+        {
+            self.Tooltip = tooltip;
+            return self;
+        }
+
+        #endregion
+
 
         public static TNavComponent ShowNever<TNavComponent>(this TNavComponent self)
             where TNavComponent : NavStaticComponentBase
@@ -26,12 +37,15 @@ namespace MvcSmartNav.Helpers
             return self;
         }
 
-        public static TNavComponent WithChild<TNavComponent>(this TNavComponent self, INavItem child )
-            where TNavComponent : NavStaticComponentBase
+        public static TNavComponent WithChild<TNavComponent, TUrl>(this TNavComponent self, INavItem child )
+            where TNavComponent : NavComponentBase<TUrl> 
+            where TUrl : ITargetUrlSpecification
         {
             self.AddChild(child);
             return self;
         }
+
+        
 
         public static TNavComponent WithStaticChild<TNavComponent>(this TNavComponent self, string name, string url = "",
             Func<NavStaticItem, NavStaticItem> configuration = null)
@@ -42,20 +56,33 @@ namespace MvcSmartNav.Helpers
             {
                 child = configuration(child);
             }
-            return self.WithChild(child);
-        }
-
-        public static MvcActionNavItem WithToolTip(this MvcActionNavItem self, string tooltip)
-        {
-            self.Tooltip = tooltip;
-            return self;
-        }
-
-        public static MvcActionNavItem WithChild(this MvcActionNavItem self, INavItem child)
-        {
             self.AddChild(child);
             return self;
         }
+
+
+
+        public static TNavComponent WithMvcChild<TNavComponent, TUrl>(this TNavComponent self, string name, string controllerName, string actionName, object routeValues = null, 
+            Func<MvcActionNavItem, MvcActionNavItem> configuration = null)
+            where TNavComponent : NavComponentBase<TUrl> where TUrl : ITargetUrlSpecification
+        {
+            var child = new MvcActionNavItem(name, controllerName, actionName, routeValues);
+            if (configuration != null)
+            {
+                child = configuration(child);
+            }
+            self.AddChild(child);
+            return self;
+        }
+
+
+
+        //public static MvcActionNavItem WithChild(this MvcActionNavItem self, INavItem child)
+        //{
+        //    self.AddChild(child);
+        //    return self;
+        //}
+
 
         public static MvcActionNavItem DisabledWhenNotAuthorized(this MvcActionNavItem self)
         {
