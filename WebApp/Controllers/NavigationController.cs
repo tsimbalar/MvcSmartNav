@@ -1,4 +1,5 @@
-﻿using System.Web.Mvc;
+﻿using System;
+using System.Web.Mvc;
 using MvcSmartNav;
 using MvcSmartNav.Helpers;
 
@@ -14,23 +15,18 @@ namespace WebApp.Controllers
         {
             var root = new NavStaticRoot("NAVIGATION ROOT (home)", Url.Action("Index", "Home"))
                 .WithToolTip("Home of the web site");
-               
+
             // ============== STATIC NAV ITEMS ==========================
             root.AddChild(
                 new NavStaticItem("Static items", Url.Action("Index", "Home"))
                     .WithToolTip("some links to static items")
-                    .WithChild(
-                        new NavStaticItem("Some Page", Url.Action("SomePage", "Home"))
-                            .WithToolTip("Some Page - should be active when browsing there !"))
-                    .WithChild(
-                        new NavStaticItem("Not a link")
-                            .WithToolTip("I don't have a link !")
-                            .WithChild(
-                                new NavStaticItem("Grand-son", Url.Action("Index", "Home"))
-                                    .WithChild(
-                                        new NavStaticItem("Great Grand-son", "http://www.perdu.com")
-                                    )
-                            )
+                    .WithStaticChild("Some Page", Url.Action("SomePage", "Home"), c =>
+                        c.WithToolTip("Some Page - should be active when browsing there !"))
+                    .WithStaticChild("Not a link", "", c =>
+                        c.WithToolTip("I don't have a link !")
+                        .WithStaticChild("Grand-son", Url.Action("Index", "Home"), gc =>
+                            gc.WithStaticChild("Great Grand-son", "http://www.perdu.com")
+                        )
                     )
             );
 
@@ -38,52 +34,40 @@ namespace WebApp.Controllers
             // ================= Visibility ===============================
             root.AddChild(
                 new NavStaticItem("Visibility Features")
-                    .WithChild(
-                        new NavStaticItem("Hidden Home link", Url.Action("Index", "Home"))
-                            .WithToolTip("Tooltip of element")
-                            .ShowNever()
+                    .WithStaticChild("Hidden Home link", Url.Action("Index", "Home"), c =>
+                        c.WithToolTip("Tooltip of element")
+                        .ShowNever()
                     )
-                    .WithChild(
-                        new NavStaticItem("Not visible with children")
-                            .ShowNever()
-                            .WithChild(
-                                new NavStaticItem("My father is invisible .. ")
-                            )
-                            .WithChild(
-                                new NavStaticItem("My father is invisible .. and I'm disabled")
-                                .EnabledNever()
-                            )
+                    .WithStaticChild("Not visible with children", "", c =>
+                        c.ShowNever()
+                        .WithStaticChild("My father is invisible .. ")
+                        .WithStaticChild("My father is invisible .. and I'm disabled", "", gc =>
+                            gc.EnabledNever()
+                       )
                     )
-                    .WithChild(
-                        new NavStaticItem("Visible with hidden children")
-                            .WithChild(
-                                new NavStaticItem("I'm invisible")
-                                    .ShowNever()
-                            )
-                            .WithChild(
-                                new NavStaticItem("I'm invisible too")
-                                    .ShowNever()
-                            )
+                    .WithStaticChild("Visible with hidden children", "", c =>
+                        c.WithStaticChild("I'm invisible", "", gc =>
+                            gc.ShowNever()
+                        )
+                        .WithStaticChild("I'm invisible too", "", gc =>
+                            gc.ShowNever()
+                        )
                     )
             );
 
             // Enabled / disabled
             root.AddChild(
                 new NavStaticItem("Enablement Features")
-                    .WithChild(
-                        new NavStaticItem("Always disabled")
-                            .EnabledNever()
+                    .WithStaticChild("Always disabled", "", c=> 
+                        c.EnabledNever()
                     )
-                    .WithChild(
-                        new NavStaticItem("I'am enabled")
-                            .WithChild(
-                                 new NavStaticItem("I am disabled")
-                                    .EnabledNever()
-                            )
-                            .WithChild(
-                                new NavStaticItem("I am disabled too")
-                                    .EnabledNever()
-                            )
+                    .WithStaticChild("I'am enabled", "", c=> 
+                        c.WithStaticChild("I am disabled", "", gc => 
+                            gc.EnabledNever()
+                        )
+                        .WithStaticChild("I am disabled too", "", gc=> 
+                            gc.EnabledNever()
+                        )
                     )
             );
 

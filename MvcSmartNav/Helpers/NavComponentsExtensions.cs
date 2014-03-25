@@ -1,4 +1,5 @@
-﻿using MvcSmartNav.Enablement;
+﻿using System;
+using MvcSmartNav.Enablement;
 using MvcSmartNav.Visibility;
 
 namespace MvcSmartNav.Helpers
@@ -30,6 +31,18 @@ namespace MvcSmartNav.Helpers
         {
             self.AddChild(child);
             return self;
+        }
+
+        public static TNavComponent WithStaticChild<TNavComponent>(this TNavComponent self, string name, string url = "",
+            Func<NavStaticItem, NavStaticItem> configuration = null)
+            where TNavComponent : NavStaticComponentBase
+        {
+            var child = new NavStaticItem(name, url);
+            if (configuration != null)
+            {
+                child = configuration(child);
+            }
+            return self.WithChild(child);
         }
 
         public static MvcActionNavItem WithToolTip(this MvcActionNavItem self, string tooltip)
