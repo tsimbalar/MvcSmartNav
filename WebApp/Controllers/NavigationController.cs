@@ -1,5 +1,4 @@
-﻿using System;
-using System.Web.Mvc;
+﻿using System.Web.Mvc;
 using MvcSmartNav;
 using MvcSmartNav.Helpers;
 
@@ -75,13 +74,13 @@ namespace WebApp.Controllers
             root.AddChild(
                 new NavStaticItem("MvcNav items", Url.Action("Index", "Home"))
                     .WithToolTip("using Mvc specific stuff")
-                    .WithMvcChild<NavStaticItem, StaticUrlSpecification>("Restricted Page", "Home", "SomeRestrictedPage", null, c=> 
+                    .WithMvcChild("Restricted Page", "Home", "SomeRestrictedPage", null, c=> 
                             c.WithToolTip("Some super secret Page (will disable if not allowed)")
                             .DisabledWhenNotAuthorized())
-                    .WithMvcChild<NavStaticItem, StaticUrlSpecification>("Other Restricted Page", "Home", "OtherRestrictedPage", null, c => 
+                    .WithMvcChild("Other Restricted Page", "Home", "OtherRestrictedPage", null, c => 
                             c.WithToolTip("Some super secret Page (will hide if not allowed)")
                             .HiddenWhenNotAuthorized()
-                            .WithMvcChild<MvcActionNavItem, MvcActionUrlSpecification>("Non restricted page", "Home", "SomePage")
+                            .WithMvcChild("Non restricted page", "Home", "SomePage")
                             
                     )
             );

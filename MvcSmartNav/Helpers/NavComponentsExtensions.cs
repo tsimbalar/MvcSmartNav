@@ -1,4 +1,5 @@
 ﻿using System;
+using JetBrains.Annotations;
 using MvcSmartNav.Enablement;
 using MvcSmartNav.Visibility;
 
@@ -8,7 +9,13 @@ namespace MvcSmartNav.Helpers
     {
         #region ToolTip
 
-        public static TNavComponent WithToolTip<TNavComponent>(this TNavComponent self, string tooltip) where TNavComponent : NavStaticComponentBase
+        public static NavStaticItem WithToolTip(this NavStaticItem self, string tooltip)
+        {
+            self.Tooltip = tooltip;
+            return self;
+        }
+
+        public static NavStaticRoot WithToolTip(this NavStaticRoot self, string tooltip)
         {
             self.Tooltip = tooltip;
             return self;
@@ -37,19 +44,21 @@ namespace MvcSmartNav.Helpers
             return self;
         }
 
-        public static TNavComponent WithChild<TNavComponent, TUrl>(this TNavComponent self, INavItem child )
-            where TNavComponent : NavComponentBase<TUrl> 
-            where TUrl : ITargetUrlSpecification
+
+        public static NavStaticItem WithStaticChild(this NavStaticItem self, string name, string url = "",
+            Func<NavStaticItem, NavStaticItem> configuration = null)
         {
+            var child = new NavStaticItem(name, url);
+            if (configuration != null)
+            {
+                child = configuration(child);
+            }
             self.AddChild(child);
             return self;
         }
 
-        
-
-        public static TNavComponent WithStaticChild<TNavComponent>(this TNavComponent self, string name, string url = "",
+        public static MvcActionNavItem WithStaticChild(this MvcActionNavItem self, string name, string url = "",
             Func<NavStaticItem, NavStaticItem> configuration = null)
-            where TNavComponent : NavStaticComponentBase
         {
             var child = new NavStaticItem(name, url);
             if (configuration != null)
@@ -61,10 +70,20 @@ namespace MvcSmartNav.Helpers
         }
 
 
+        public static NavStaticItem WithMvcChild(this NavStaticItem self, string name, [AspMvcController] string controllerName, [AspMvcAction] string actionName, object routeValues = null,
+             Func<MvcActionNavItem, MvcActionNavItem> configuration = null)
+        {
+            var child = new MvcActionNavItem(name, controllerName, actionName, routeValues);
+            if (configuration != null)
+            {
+                child = configuration(child);
+            }
+            self.AddChild(child);
+            return self;
+        }
 
-        public static TNavComponent WithMvcChild<TNavComponent, TUrl>(this TNavComponent self, string name, string controllerName, string actionName, object routeValues = null, 
+        public static MvcActionNavItem WithMvcChild(this MvcActionNavItem self, string name, [AspMvcController] string controllerName, [AspMvcAction] string actionName, object routeValues = null,
             Func<MvcActionNavItem, MvcActionNavItem> configuration = null)
-            where TNavComponent : NavComponentBase<TUrl> where TUrl : ITargetUrlSpecification
         {
             var child = new MvcActionNavItem(name, controllerName, actionName, routeValues);
             if (configuration != null)
@@ -77,24 +96,19 @@ namespace MvcSmartNav.Helpers
 
 
 
-        //public static MvcActionNavItem WithChild(this MvcActionNavItem self, INavItem child)
-        //{
-        //    self.AddChild(child);
-        //    return self;
-        //}
-
-
-        public static MvcActionNavItem DisabledWhenNotAuthorized(this MvcActionNavItem self)
+        public static TMvcNavComponent DisabledWhenNotAuthorized<TMvcNavComponent>(this TMvcNavComponent self)
+            where TMvcNavComponent : MvcActionNavComponentBase
         {
             self.EnablementStrategy = new AuthorizeAttributeEnabledStrategy();
             return self;
         }
 
-        public static MvcActionNavItem HiddenWhenNotAuthorized(this MvcActionNavItem self)
+        public static TMvcNavComponent HiddenWhenNotAuthorized<TMvcNavComponent>(this TMvcNavComponent self)
+            where TMvcNavComponent : MvcActionNavComponentBase
         {
             self.VisibilityStrategy = new AuthorizeAttributeVisibleStrategy();
             return self;
         }
-        
+
     }
 }
