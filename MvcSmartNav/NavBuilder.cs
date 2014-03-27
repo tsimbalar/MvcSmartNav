@@ -1,4 +1,6 @@
+using System.Diagnostics;
 using System.Web.Mvc;
+using System.Xml;
 using MvcSmartNav.ViewModels;
 
 namespace MvcSmartNav
@@ -7,6 +9,9 @@ namespace MvcSmartNav
     {
         public NavTreeViewModelBase Build(ViewContext context, INavRoot tree)
         {
+            var timer = new Stopwatch();
+            timer.Start();
+ 
             var root = new NavRootViewModel(tree.Name, tree.EvaluateTargetUrl(context))
                            {
                                ToolTip = tree.Tooltip
@@ -14,7 +19,8 @@ namespace MvcSmartNav
             SetDisplayOptionsAndChildren(context, source: tree, target: root);
 
             var result = new NavTreeViewModel(context, root);
-
+            timer.Stop();
+            result.BuildDuration = timer.Elapsed;
             return result;
         }
 

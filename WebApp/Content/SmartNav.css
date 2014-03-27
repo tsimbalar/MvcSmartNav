@@ -24,6 +24,18 @@
             color: #6b6b6b;
         }
 
+    #smartNavDebugNav .footer {
+        display: block;
+        font-size: 0.8em;
+        margin: 0;
+        background-color: #E0E0E0;
+    }
+
+    #smartNavDebugNav .footer .time-info {
+        display: block;
+        text-align: right;
+    }
+
 .smartnav .active {
     font-weight: bold;
 }

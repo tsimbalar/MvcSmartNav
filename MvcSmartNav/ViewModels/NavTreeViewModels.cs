@@ -20,6 +20,8 @@ namespace MvcSmartNav.ViewModels
 
         public INavRootViewModel NavigationRoot { get { return _root; } }
 
+        public TimeSpan BuildDuration { get; set; }
+
     }
 
     public sealed class NavTreeViewModel : NavTreeViewModelBase
@@ -28,5 +30,7 @@ namespace MvcSmartNav.ViewModels
             : base(callingContext, root)
         {
         }
+
+        
     }
 }

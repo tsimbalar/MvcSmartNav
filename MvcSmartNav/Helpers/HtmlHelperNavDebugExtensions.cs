@@ -46,6 +46,19 @@ namespace MvcSmartNav.Helpers
             result.Append(childList);
 
 
+            // footer with timing information
+            var footerDiv = new TagBuilder("div");
+            footerDiv.AddCssClass("footer");
+            result.Append(footerDiv.ToString(TagRenderMode.StartTag));
+
+            var timingSpan = new TagBuilder("span");
+            timingSpan.AddCssClass("time-info");
+            timingSpan.SetInnerText(string.Format("Built in {0} ms", treeModel.BuildDuration.TotalMilliseconds));
+            result.Append(timingSpan.ToString(TagRenderMode.Normal));
+
+            var footerDivEnd = new TagBuilder("div");
+            result.Append(footerDivEnd.ToString(TagRenderMode.EndTag));
+
             var closingDiv = new TagBuilder("div");
             result.Append(closingDiv.ToString(TagRenderMode.EndTag));
 
