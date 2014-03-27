@@ -8,14 +8,16 @@ namespace MvcSmartNav.ViewModels
     {
         private readonly string _name;
         private readonly string _targetUrl;
+        private readonly int _level;
         private readonly List<NavItemViewModel> _children;
 
-        protected NavComponentViewModelBase(string name, string targetUrl)
+        protected NavComponentViewModelBase(string name, string targetUrl, int level)
         {
             if (name == null) throw new ArgumentNullException("name");
             if (targetUrl == null) throw new ArgumentNullException("targetUrl");
             _name = name;
             _targetUrl = targetUrl;
+            _level = level;
             _children = new List<NavItemViewModel>();
         }
 
@@ -32,6 +34,11 @@ namespace MvcSmartNav.ViewModels
 
         public bool HasChildren { get { return _children.Any(); } }
         public IEnumerable<INavItemViewModel> Children { get { return _children; } }
+
+        public int Level
+        {
+            get { return _level; }
+        }
 
         public void SetDisabled(bool isDisabled, string reason)
         {
@@ -66,15 +73,15 @@ namespace MvcSmartNav.ViewModels
     public sealed class NavRootViewModel : NavComponentViewModelBase, INavRootViewModel
     {
         public NavRootViewModel(string name, string targetUrl)
-            : base(name, targetUrl)
+            : base(name, targetUrl, level : 0)
         {
         }
     }
 
     public sealed class NavItemViewModel : NavComponentViewModelBase, INavItemViewModel
     {
-        public NavItemViewModel(string name, string targetUrl)
-            : base(name, targetUrl)
+        public NavItemViewModel(string name, string targetUrl, int level)
+            : base(name, targetUrl, level)
         {
         }
     }

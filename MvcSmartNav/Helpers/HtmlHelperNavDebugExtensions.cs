@@ -40,9 +40,7 @@ namespace MvcSmartNav.Helpers
             var rootLink = RenderNavLink(treeModel.NavigationRoot, "nav-item", "nav-root");
             result.Append(rootLink);
 
-            var initialHierarchyLevel = 0;
-
-            var childList = RenderChildren(treeModel.NavigationRoot, initialHierarchyLevel);
+            var childList = RenderChildren(treeModel.NavigationRoot);
             result.Append(childList);
 
 
@@ -65,7 +63,7 @@ namespace MvcSmartNav.Helpers
             return new MvcHtmlString(result.ToString());
         }
 
-        private static string RenderChildren(INavComponentViewModel node, int hierarchyLevel)
+        private static string RenderChildren(INavComponentViewModel node)
         {
             if (!node.Children.Any())
             {
@@ -74,7 +72,7 @@ namespace MvcSmartNav.Helpers
             var result = new StringBuilder();
             var openingUl = new TagBuilder("ul");
             openingUl.AddCssClass("nav-menu");
-            var levelCssCLass = String.Format("nav-level-{0}", hierarchyLevel);
+            var levelCssCLass = String.Format("nav-level-{0}", node.Level + 1);
             openingUl.AddCssClass(levelCssCLass);
 
             result.Append(openingUl.ToString(TagRenderMode.StartTag));
@@ -86,7 +84,7 @@ namespace MvcSmartNav.Helpers
                 result.Append(liToAppend.ToString(TagRenderMode.StartTag));
                 result.Append(RenderNavLink(child, "nav-item"));
 
-                result.Append(RenderChildren(child, hierarchyLevel + 1));
+                result.Append(RenderChildren(child));
 
                 var closingLi = new TagBuilder("li");
                 result.Append(closingLi.ToString(TagRenderMode.EndTag));
@@ -122,6 +120,8 @@ namespace MvcSmartNav.Helpers
                                    {
                                        node.ToolTip
                                    };
+
+            tooltipParts.Add("LEVEL " + node.Level);
 
             tooltipParts.Add((node.IsVisible ? "VISIBLE" : "INVISIBLE") + " because " + node.VisibilityReason);
 

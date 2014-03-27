@@ -1,6 +1,5 @@
 using System.Diagnostics;
 using System.Web.Mvc;
-using System.Xml;
 using MvcSmartNav.ViewModels;
 
 namespace MvcSmartNav
@@ -25,9 +24,9 @@ namespace MvcSmartNav
         }
 
 
-        private static NavItemViewModel BuildNavItem<TNavItem>(ViewContext context, TNavItem navItem) where TNavItem : INavItem
+        private static NavItemViewModel BuildNavItem<TNavItem>(ViewContext context, TNavItem navItem, int level) where TNavItem : INavItem
         {
-            var result = new NavItemViewModel(navItem.Name, navItem.EvaluateTargetUrl(context))
+            var result = new NavItemViewModel(navItem.Name, navItem.EvaluateTargetUrl(context), level)
                              {
                                  ToolTip = navItem.Tooltip
                              };
@@ -53,7 +52,7 @@ namespace MvcSmartNav
             {
                 foreach (var child in source.Children)
                 {
-                    var childToAdd = BuildNavItem(context, child);
+                    var childToAdd = BuildNavItem(context, child, target.Level +1);
                     target.AddChild(childToAdd);
                 }
             }

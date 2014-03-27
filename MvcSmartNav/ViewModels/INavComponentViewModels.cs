@@ -18,6 +18,8 @@ namespace MvcSmartNav.ViewModels
         string DisabledReason { get; }
 
         string ToolTip { get; }
+
+        int Level { get; }
     }
 
     public interface INavRootViewModel : INavComponentViewModel
