@@ -65,6 +65,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Activation\ExactUrlPathActivationStrategy.cs" />
     <Compile Include="Enablement\AlwaysDisabledStrategy.cs" />
     <Compile Include="Enablement\AlwaysEnabledStrategy.cs" />
     <Compile Include="Enablement\AuthorizeAttributeEnabledStrategy.cs" />
@@ -80,7 +81,7 @@
     <Compile Include="Visibility\AlwaysVisibleStrategy.cs" />
     <Compile Include="ViewModels\NavComponentViewModels.cs" />
     <Compile Include="ViewModels\NavTreeViewModels.cs" />
-    <Compile Include="Activation\ExactUrlActivationStrategy.cs" />
+    <Compile Include="Activation\ExactUrlPathAndQueryStringActivationStrategy.cs" />
     <Compile Include="ViewModels\INavComponentViewModels.cs" />
     <Compile Include="INavComponents.cs" />
     <Compile Include="Activation\INavItemActivationStrategy.cs" />

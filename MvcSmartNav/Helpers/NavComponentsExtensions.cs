@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Net.Mail;
 using JetBrains.Annotations;
+using MvcSmartNav.Activation;
 using MvcSmartNav.Enablement;
 using MvcSmartNav.Visibility;
 
@@ -44,6 +46,15 @@ namespace MvcSmartNav.Helpers
             return self;
         }
 
+        public static TNavComponent ActivatedForExactUrlAndQuerystring<TNavComponent>(this TNavComponent self)
+            where TNavComponent : NavStaticComponentBase
+        {
+            self.ActivationStrategy = new ExactUrlPathAndQueryStringActivationStrategy();
+            return self;
+        }
+
+
+        #region With*Child
 
         public static NavStaticItem WithStaticChild(this NavStaticItem self, string name, string url = "",
             Func<NavStaticItem, NavStaticItem> configuration = null)
@@ -94,7 +105,7 @@ namespace MvcSmartNav.Helpers
             return self;
         }
 
-
+        #endregion
 
         public static TMvcNavComponent DisabledWhenNotAuthorized<TMvcNavComponent>(this TMvcNavComponent self)
             where TMvcNavComponent : MvcActionNavComponentBase

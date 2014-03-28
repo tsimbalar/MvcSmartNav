@@ -14,7 +14,7 @@ namespace MvcSmartNav
         protected NavStaticComponentBase(string name, string url)
             :base(name, new StaticUrlSpecification(url))
         {
-            _activationStrategy = new ExactUrlActivationStrategy();
+            _activationStrategy = new ExactUrlPathActivationStrategy();
             _visibilityStrategy = new AlwaysVisibleStrategy();
             _enablementStrategy = new AlwaysEnabledStrategy();
 

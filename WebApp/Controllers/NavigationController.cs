@@ -23,8 +23,15 @@ namespace WebApp.Controllers
                         c.WithToolTip("Some Page - should be active when browsing there !"))
                     .WithStaticChild("Not a link", "", c =>
                         c.WithToolTip("I don't have a link !")
-                        .WithStaticChild("Grand-son", Url.Action("Index", "Home"), gc =>
-                            gc.WithStaticChild("Great Grand-son", "http://www.perdu.com")
+                        .WithStaticChild("Grand-son", Url.Action("Index", "Home", new {queryStringParam="toto"}), gc =>
+                            gc
+                            .WithToolTip("with a query string")
+                            .WithStaticChild("Great Grand-son", "http://www.perdu.com")
+                        )
+                        .WithStaticChild("Grand-son 2 ... activation based on exact url and qs", Url.Action("Index", "Home", new {queryString = "foo"}), gc => 
+                            gc
+                            .WithToolTip("with a query string")
+                            .ActivatedForExactUrlAndQuerystring()
                         )
                     )
             );

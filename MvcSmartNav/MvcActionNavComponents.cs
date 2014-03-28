@@ -18,7 +18,7 @@ namespace MvcSmartNav
         {
             VisibilityStrategy = new AlwaysVisibleStrategy();
             EnablementStrategy = new AlwaysEnabledStrategy();
-            ActivationStrategy = new ExactUrlActivationStrategy();
+            ActivationStrategy = new ExactUrlPathActivationStrategy();
         }
 
         public INavItemActivationStrategy<MvcActionNavComponentBase> ActivationStrategy
