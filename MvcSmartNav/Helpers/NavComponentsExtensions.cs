@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Net.Mail;
 using JetBrains.Annotations;
 using MvcSmartNav.Activation;
 using MvcSmartNav.Enablement;
@@ -11,13 +10,8 @@ namespace MvcSmartNav.Helpers
     {
         #region ToolTip
 
-        public static NavStaticItem WithToolTip(this NavStaticItem self, string tooltip)
-        {
-            self.Tooltip = tooltip;
-            return self;
-        }
-
-        public static NavStaticRoot WithToolTip(this NavStaticRoot self, string tooltip)
+        public static TNavComponent WithToolTip<TNavComponent>(this TNavComponent self, string tooltip)
+            where TNavComponent : NavComponentBase
         {
             self.Tooltip = tooltip;
             return self;
@@ -49,27 +43,16 @@ namespace MvcSmartNav.Helpers
         public static TNavComponent ActivatedForExactUrlAndQuerystring<TNavComponent>(this TNavComponent self)
             where TNavComponent : NavStaticComponentBase
         {
-            self.ActivationStrategy = new ExactUrlPathAndQueryStringActivationStrategy();
+            self.ActivationStrategy = new ExactUrlPathAndQueryStringActivationStrategy<NavStaticComponentBase>();
             return self;
         }
 
 
         #region With*Child
 
-        public static NavStaticItem WithStaticChild(this NavStaticItem self, string name, string url = "",
+        public static TNavComponent WithStaticChild<TNavComponent>(this TNavComponent self, string name, string url = "",
             Func<NavStaticItem, NavStaticItem> configuration = null)
-        {
-            var child = new NavStaticItem(name, url);
-            if (configuration != null)
-            {
-                child = configuration(child);
-            }
-            self.AddChild(child);
-            return self;
-        }
-
-        public static MvcActionNavItem WithStaticChild(this MvcActionNavItem self, string name, string url = "",
-            Func<NavStaticItem, NavStaticItem> configuration = null)
+            where TNavComponent:NavComponentBase
         {
             var child = new NavStaticItem(name, url);
             if (configuration != null)
@@ -81,20 +64,9 @@ namespace MvcSmartNav.Helpers
         }
 
 
-        public static NavStaticItem WithMvcChild(this NavStaticItem self, string name, [AspMvcController] string controllerName, [AspMvcAction] string actionName, object routeValues = null,
+        public static TNavComponent WithMvcChild<TNavComponent>(this TNavComponent self, string name, [AspMvcController] string controllerName, [AspMvcAction] string actionName, object routeValues = null,
              Func<MvcActionNavItem, MvcActionNavItem> configuration = null)
-        {
-            var child = new MvcActionNavItem(name, controllerName, actionName, routeValues);
-            if (configuration != null)
-            {
-                child = configuration(child);
-            }
-            self.AddChild(child);
-            return self;
-        }
-
-        public static MvcActionNavItem WithMvcChild(this MvcActionNavItem self, string name, [AspMvcController] string controllerName, [AspMvcAction] string actionName, object routeValues = null,
-            Func<MvcActionNavItem, MvcActionNavItem> configuration = null)
+            where TNavComponent: NavComponentBase
         {
             var child = new MvcActionNavItem(name, controllerName, actionName, routeValues);
             if (configuration != null)

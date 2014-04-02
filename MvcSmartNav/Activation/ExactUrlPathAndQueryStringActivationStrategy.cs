@@ -3,9 +3,10 @@ using System.Web.Mvc;
 
 namespace MvcSmartNav.Activation
 {
-    public sealed class ExactUrlPathAndQueryStringActivationStrategy : INavItemActivationStrategy<INavComponent>
+    public sealed class ExactUrlPathAndQueryStringActivationStrategy<TNavComponent> : INavItemActivationStrategy<TNavComponent>
+        where TNavComponent : INavComponent
     {
-        public NodeActivation EvaluateActivation(INavComponent navComponent, ViewContext context)
+        public NodeActivation EvaluateActivation(TNavComponent navComponent, ViewContext context)
         {
             var currentRelativeUrl = context.RequestContext.HttpContext.Request.Url.PathAndQuery;
             var targetUrl = navComponent.EvaluateTargetUrl(context);

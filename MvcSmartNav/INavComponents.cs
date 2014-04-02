@@ -12,7 +12,7 @@ namespace MvcSmartNav
 
         string Name { get; }
 
-        string Tooltip { get; }
+        string Tooltip { get; set; }
 
         NodeVisibility EvaluateVisibility(ViewContext context);
 
