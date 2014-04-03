@@ -17,6 +17,7 @@ namespace WebApp.Controllers
         {
             var nav = Nav.Root("NAVIGATION ROOT (home)", cfg => cfg.LinkTo(Url.Action("Index", "Home"))
                                                                     .WithToolTip("Home of the web site"),
+                // ============== STATIC NAV ITEMS ==========================
                 Nav.Item("Static Items", cfg=> cfg.LinkTo(Url.Action("Index", "Home"))
                                                     .WithToolTip("some links to static items"),
                     Nav.Item("Some Page", cfg => cfg.LinkTo(Url.Action("SomePage", "Home"))
@@ -116,16 +117,16 @@ namespace WebApp.Controllers
             );
 
 
-            var model = new NavBuilder().Build(callingContext, root);
+            var model = new NavBuilder().Build(callingContext, nav);
             return PartialView("Nav.partial", model);
         }
     }
 
     public class Nav
     {
-        public static INavRoot Root(string name, Func<INavConfiguration, INavConfiguration> configurationAction, params INavItem[] children)
+        public static INavRoot Root(string name, Func<INavRootConfiguration, INavRootConfiguration> configurationAction, params INavItem[] children)
         {
-            INavConfiguration config = new StaticNavConfiguration("");
+            INavRootConfiguration config = new StaticNavConfiguration("");
             if (configurationAction != null)
             {
                 config = configurationAction(config);
@@ -145,9 +146,9 @@ namespace WebApp.Controllers
             return Root(name, null, children);
         }
 
-        public static INavItem Item(string name, Func<INavConfiguration, INavConfiguration> configurationAction, params INavItem[] children)
+        public static INavItem Item(string name, Func<INavItemConfiguration, INavItemConfiguration> configurationAction, params INavItem[] children)
         {
-            INavConfiguration config = new StaticNavConfiguration("");
+            INavItemConfiguration config = new StaticNavConfiguration("");
             if (configurationAction != null)
             {
                 config = configurationAction(config);
@@ -168,33 +169,56 @@ namespace WebApp.Controllers
         }
     }
 
-    public interface INavConfiguration
+    public interface INavItemConfiguration<out TItemType> where TItemType : INavItem
     {
-         INavItem CreateNode(string name);
-
-         INavRoot CreateRoot(string name);
+         TItemType CreateNode(string name);
     }
 
-    public abstract class NavConfiguration<TItemType, TRootType> : INavConfiguration where TItemType : INavItem where TRootType: INavRoot
+    public interface INavRootConfiguration<out TItemType> where TItemType : INavRoot
     {
-        INavItem INavConfiguration.CreateNode(string name)
+        TItemType CreateRoot(string name);
+    }
+
+    public interface INavRootConfiguration
+    {
+        INavRoot CreateRoot(string name);
+    }
+
+    public interface INavItemConfiguration
+    {
+        INavItem CreateNode(string name);
+    }
+
+    
+
+    
+
+    public abstract class NavConfiguration<TItemType, TRootType> : INavItemConfiguration, INavRootConfiguration, INavRootConfiguration<TRootType>, INavItemConfiguration<TItemType> where TItemType : INavItem where TRootType: INavRoot
+    {
+        
+        INavItem INavItemConfiguration.CreateNode(string name)
         {
             return CreateNode(name);
         }
 
-        INavRoot INavConfiguration.CreateRoot(string name)
+        INavRoot INavRootConfiguration.CreateRoot(string name)
         {
             return CreateRoot(name);
         }
 
-        public abstract TItemType CreateNode(string name);
-
         public abstract TRootType CreateRoot(string name);
+
+        public abstract TItemType CreateNode(string name);
     }
 
     public static class NavConfigurationExtensions
     {
-        public static NavConfiguration<NavStaticItem, NavStaticRoot> LinkTo(this INavConfiguration self, string url)
+        public static NavConfiguration<NavStaticItem, NavStaticRoot> LinkTo(this INavItemConfiguration self, string url)
+        {
+            return new StaticNavConfiguration(url);
+        }
+
+        public static NavConfiguration<NavStaticItem, NavStaticRoot> LinkTo(this INavRootConfiguration self, string url)
         {
             return new StaticNavConfiguration(url);
         }
