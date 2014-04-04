@@ -124,13 +124,11 @@ namespace WebApp.Controllers
 
     public class Nav
     {
-        public static INavRoot Root(string name, Func<INavRootConfiguration, INavRootConfiguration> configurationAction, params INavItem[] children)
+        public static INavRoot Root(string name, Func<NavRootConfigBuilder, INavRootConfiguration> configurationAction, params INavItem[] children)
         {
-            INavRootConfiguration config = new StaticNavConfiguration("");
-            if (configurationAction != null)
-            {
-                config = configurationAction(config);
-            }
+            var builder = new NavRootConfigBuilder();
+
+            INavRootConfiguration config = configurationAction != null ? configurationAction(builder) : builder;
 
             var root = (NavComponentBase)config.CreateRoot(name);
 
@@ -146,27 +144,58 @@ namespace WebApp.Controllers
             return Root(name, null, children);
         }
 
-        public static INavItem Item(string name, Func<INavItemConfiguration, INavItemConfiguration> configurationAction, params INavItem[] children)
+        public static INavItem Item(string name, Func<NavItemConfigBuilder, INavItemConfiguration> configurationAction, params INavItem[] children)
         {
-            INavItemConfiguration config = new StaticNavConfiguration("");
-            if (configurationAction != null)
-            {
-                config = configurationAction(config);
-            }
+            var builder = new NavItemConfigBuilder();
 
-            var root = (NavComponentBase)config.CreateNode(name);
+            INavItemConfiguration config = configurationAction != null ? configurationAction(builder) : builder;
+
+
+            var node = (NavComponentBase)config.CreateNode(name);
 
             foreach (var navItem in children)
             {
-                root.AddChild(navItem);
+                node.AddChild(navItem);
             }
-            return (INavItem) root;
+            return (INavItem) node;
+        }
+
+        public static INavItem Item<TNavItem>(string name, Func<NavItemConfigBuilder, INavItemConfiguration<TNavItem>> configurationAction,
+            params INavItem[] children) where TNavItem : INavItem
+        {
+            return Item(name, cfg => (INavItemConfiguration ) configurationAction(cfg), children);
         }
 
         public static INavItem Item(string name, params INavItem[] children)
         {
             return Item(name, null, children);
         }
+    }
+
+    public class NavItemConfigBuilder : INavItemConfiguration
+    {
+        public INavItem CreateNode(string name)
+        {
+            return new NavStaticItem(name);
+        }
+
+        public INavItemConfiguration<NavStaticItem> LinkTo(string url)
+        {
+            return new StaticNavConfiguration(url);
+        } 
+    }
+
+    public class NavRootConfigBuilder : INavRootConfiguration
+    {
+        public INavRoot CreateRoot(string name)
+        {
+            return new NavStaticRoot(name);
+        }
+
+        public INavRootConfiguration<NavStaticRoot> LinkTo(string url)
+        {
+            return new StaticNavConfiguration(url);
+        } 
     }
 
     public interface INavItemConfiguration<out TItemType> where TItemType : INavItem
@@ -211,6 +240,48 @@ namespace WebApp.Controllers
         public abstract TItemType CreateNode(string name);
     }
 
+    public class NavRootConfiguration<TNavRoot> : NavConfiguration<INavItem, TNavRoot> where TNavRoot : INavRoot
+    {
+        private readonly INavRootConfiguration<TNavRoot> _wrappedRootConfig;
+
+        public NavRootConfiguration([NotNull] INavRootConfiguration<TNavRoot> wrappedRootConfig )
+        {
+            if (wrappedRootConfig == null) throw new ArgumentNullException("wrappedRootConfig");
+            _wrappedRootConfig = wrappedRootConfig;
+        }
+
+        public override TNavRoot CreateRoot(string name)
+        {
+            return _wrappedRootConfig.CreateRoot(name);
+        }
+
+        public override INavItem CreateNode(string name)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public class NavItemConfiguration<TNavItem> : NavConfiguration<TNavItem, INavRoot> where TNavItem : INavItem
+    {
+        private readonly INavItemConfiguration<TNavItem> _wrappedItemConfig;
+
+        public NavItemConfiguration([NotNull] INavItemConfiguration<TNavItem> wrappedItemConfig)
+        {
+            if (_wrappedItemConfig == null) throw new ArgumentNullException("wrappedItemConfig");
+            _wrappedItemConfig = wrappedItemConfig;
+        }
+
+        public override INavRoot CreateRoot(string name)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override TNavItem CreateNode(string name)
+        {
+            return _wrappedItemConfig.CreateNode(name);
+        }
+    }
+
     public static class NavConfigurationExtensions
     {
         public static NavConfiguration<NavStaticItem, NavStaticRoot> LinkTo(this INavItemConfiguration self, string url)
@@ -223,37 +294,41 @@ namespace WebApp.Controllers
             return new StaticNavConfiguration(url);
         }
 
-        public static NavConfiguration<TNavItem, TNavRoot> WithToolTip<TNavItem, TNavRoot>(
-            this NavConfiguration<TNavItem, TNavRoot> self, string tooltip)
-            where TNavItem : INavItem where TNavRoot : INavRoot
+        public static INavRootConfiguration WithToolTip<TNavRoot>(this INavRootConfiguration<TNavRoot> self, string tooltip) 
+            where TNavRoot : INavRoot
+
         {
-            return new ConfigWithTooltip<TNavItem, TNavRoot>(self, tooltip);
+            return new ConfigWithTooltip<INavItem, TNavRoot>(new NavRootConfiguration<TNavRoot>(self), tooltip);
         }
 
-        public static IPickActivationStrategy<TNavItem, TNavRoot> ActiveWhen<TNavItem, TNavRoot>(
-            this NavConfiguration<TNavItem, TNavRoot> self) where TNavItem : INavItem where TNavRoot : INavRoot
+        public static INavItemConfiguration<TNavItem> WithToolTip<TNavItem>(this INavItemConfiguration<TNavItem> self, string tooltip)
+            where TNavItem : INavItem
         {
-            return  new PickActivationStrategy<TNavItem, TNavRoot>(self);
+            return new ConfigWithTooltip<TNavItem, INavRoot>(new NavItemConfiguration<TNavItem>(self), tooltip);
         }
 
-        public static NavConfiguration<TNavItem, TNavRoot> MatchUrlPathAndQueryString<TNavItem,TNavRoot>(
-            this IPickActivationStrategy<TNavItem, TNavRoot> self) 
-            where TNavRoot : INavRoot where TNavItem : INavItem
+        public static IPickItemActivationStrategy<TNavItem> ActiveWhen<TNavItem>(
+            this INavItemConfiguration<TNavItem> self) where TNavItem : INavItem
+        {
+            return  new PickActivationStrategy<TNavItem, INavRoot>(new NavItemConfiguration<TNavItem>(self));
+        }
+
+        public static INavItemConfiguration<TNavItem> MatchUrlPathAndQueryString<TNavItem>(
+            this IPickItemActivationStrategy<TNavItem> self) 
+            where TNavItem : INavItem
         {
             return self.WithStrategy(new ExactUrlPathAndQueryStringActivationStrategy<TNavItem>());
         }
 
     }
 
-    public interface IPickActivationStrategy<TNavItem, TNavRoot>
+    public interface IPickItemActivationStrategy<TNavItem>
         where TNavItem : INavItem
-        where TNavRoot : INavRoot
     {
-        NavConfiguration<TNavItem, TNavRoot> WithStrategy(INavItemActivationStrategy<TNavItem> activationStrategy);
-
+        INavItemConfiguration<TNavItem> WithStrategy(INavItemActivationStrategy<TNavItem> activationStrategy);
     }
 
-    class PickActivationStrategy<TNavItem, TNavRoot> : IPickActivationStrategy<TNavItem, TNavRoot> where TNavItem : INavItem where TNavRoot : INavRoot
+    class PickActivationStrategy<TNavItem, TNavRoot> : IPickItemActivationStrategy<TNavItem> where TNavItem : INavItem where TNavRoot : INavRoot
     {
         private readonly NavConfiguration<TNavItem, TNavRoot> _config;
 
@@ -263,7 +338,7 @@ namespace WebApp.Controllers
             _config = config;
         }
 
-        public NavConfiguration<TNavItem, TNavRoot> WithStrategy(INavItemActivationStrategy<TNavItem> activationStrategy)
+        public INavItemConfiguration<TNavItem> WithStrategy(INavItemActivationStrategy<TNavItem> activationStrategy)
         {
             return  new ConfigWithActivationStrategy<TNavItem, TNavRoot>(_config, activationStrategy);
         }
