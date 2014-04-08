@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Web.Mvc;
 using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
@@ -19,12 +16,25 @@ namespace SmartNav.Tests
         {
             // Arrange		
             var expectedRoot = new Mock<NavRootView>().Object;
-            var sut = new NavTreeView(expectedRoot);
+            var sut = new NavTreeView(expectedRoot, new Mock<ViewContext>().Object);
             // Act
             var actual = sut.Root;
 
             // Assert		
             actual.Should().Be(expectedRoot, "Should assign Root Property");
+        }
+
+        [TestMethod]
+        public void ctor_with_viewContext_must_assign_CallingViewContext()
+        {
+            // Arrange		
+            var expectedViewContext = new Mock<ViewContext>().Object;
+            var sut = new NavTreeView(new NavRootView(), expectedViewContext);
+            // Act
+            var actual = sut.CallingViewContext;
+            
+            // Assert		
+            actual.Should().Be(expectedViewContext);
         }
 
         [TestMethod]
@@ -38,13 +48,16 @@ namespace SmartNav.Tests
             actual.Should().BeAssignableTo<INavTreeViewModel>();
         }
 
-        private NavTreeView MakeSut(NavRootView root = null)
-        {
-            root = root ?? new Mock<NavRootView>().Object;
-            return new NavTreeView(root);
-        }
 
         #endregion
+
+
+        private static NavTreeView MakeSut(NavRootView root = null, ViewContext callingViewContext = null)
+        {
+            root = root ?? new Mock<NavRootView>().Object;
+            callingViewContext = callingViewContext ?? new Mock<ViewContext>().Object;
+            return new NavTreeView(root, callingViewContext);
+        }
 
 
     }
