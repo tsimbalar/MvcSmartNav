@@ -22,7 +22,7 @@ namespace SmartNav.Tests
             var sut = MakeSut();
 
             // Act
-            sut.Build(AnyViewContext(), null);
+            sut.Build(any.ViewContext(), null);
 
             // Assert		
             // expected exception of type ArgumentNullException
@@ -36,7 +36,7 @@ namespace SmartNav.Tests
             var sut = MakeSut();
 
             // Act
-            sut.Build(null, AnyNavSpecification());
+            sut.Build(null, any.NavSpecification());
             // Assert		
             // expected exception of type ArgumentNullException
         }
@@ -48,7 +48,7 @@ namespace SmartNav.Tests
             var sut = MakeSut();
 
             // Act
-            var actual = sut.Build(AnyViewContext(), AnyNavSpecification());
+            var actual = sut.Build(any.ViewContext(), any.NavSpecification());
 
             // Assert	
             actual.Should().NotBeNull("should return a non null treeview");
@@ -62,7 +62,7 @@ namespace SmartNav.Tests
             var sut = MakeSut();
 
             // Act
-            var actualRoot = sut.Build(AnyViewContext(), AnyNavSpecification()).Root;
+            var actualRoot = sut.Build(any.ViewContext(), any.NavSpecification()).Root;
 
             // Assert		
             actualRoot.Should().NotBeNull();
@@ -75,12 +75,12 @@ namespace SmartNav.Tests
             // Arrange		
             var sut = MakeSut();
             var expectedNodeName = _fixture.Create<string>();
-            var specRoot = MockNavNode(mockName:false);
+            var specRoot = any.MockNavNode(mockName: false);
             specRoot.Setup(r => r.Name).Returns(expectedNodeName);
-            var spec = NavSpecification(specRoot.Object);
+            var spec = any.NavSpecification(specRoot.Object);
 
             // Act
-            var actualRoot = sut.Build(AnyViewContext(), spec).Root;
+            var actualRoot = sut.Build(any.ViewContext(), spec).Root;
 
             // Assert		
             actualRoot.Name.Should().Be(expectedNodeName);
@@ -91,11 +91,11 @@ namespace SmartNav.Tests
         {
             // Arrange		
             var sut = MakeSut();
-            var viewContext = AnyViewContext();
+            var viewContext = any.ViewContext();
             var nodeVisibility = _fixture.Create<NodeVisibility>();
-            var specRoot = MockNavNode(mockVisibility: false);
+            var specRoot = any.MockNavNode(mockVisibility: false);
             specRoot.Setup(r => r.EvaluateVisibility(viewContext)).Returns(nodeVisibility);
-            var spec = NavSpecification(specRoot.Object);
+            var spec = any.NavSpecification(specRoot.Object);
 
             // Act
             var actualRoot = sut.Build(viewContext, spec).Root;
@@ -110,10 +110,10 @@ namespace SmartNav.Tests
         {
             // Arrange	
             var sut = MakeSut();
-            var expectedViewContext = AnyViewContext();
+            var expectedViewContext = any.ViewContext();
 
             // Act
-            var actual = sut.Build(expectedViewContext, AnyNavSpecification());
+            var actual = sut.Build(expectedViewContext, any.NavSpecification());
 
             // Assert		
             actual.CallingViewContext.Should().Be(expectedViewContext);
@@ -129,44 +129,63 @@ namespace SmartNav.Tests
             return new NavBuilder();
         }
 
-        private INavSpecification AnyNavSpecification()
-        {
-            return NavSpecification(MockNavNode().Object);
-        }
 
-        private INavSpecification NavSpecification(INavNode root)
-        {
-            var result = new Mock<INavSpecification>(MockBehavior.Strict);
-            result.Setup(r => r.Root).Returns(root);
 
-            return result.Object;
-        }
-
-        private static ViewContext AnyViewContext()
-        {
-            return new ViewContext();
-        }
-
-        private Mock<INavNode> MockNavNode(bool mockName = true, bool mockVisibility = true)
-        {
-            var node = new Mock<INavNode>(MockBehavior.Strict);
-
-            if (mockName)
-            {
-                var name = _fixture.Create<string>();
-                node.Setup(n => n.Name).Returns(name);
-            }
-
-            if (mockVisibility)
-            {
-                var visibilityToReturn = _fixture.Create<NodeVisibility>();
-                node.Setup(n => n.EvaluateVisibility(It.IsAny<ViewContext>())).Returns(visibilityToReturn);
-            }
-            
-            return node;
-        }
 
         #endregion
+
+// ReSharper disable InconsistentNaming
+        private Mother any { get { return new Mother(_fixture); } }
+// ReSharper restore InconsistentNaming
+
+        private class Mother
+        {
+            private readonly Fixture _fixture;
+
+            public Mother(Fixture fixture)
+            {
+                _fixture = fixture;
+            }
+
+
+            public INavSpecification NavSpecification()
+            {
+                return NavSpecification(MockNavNode().Object);
+            }
+
+            public INavSpecification NavSpecification(INavNode root)
+            {
+                var result = new Mock<INavSpecification>(MockBehavior.Strict);
+                result.Setup(r => r.Root).Returns(root);
+
+                return result.Object;
+            }
+
+
+            public Mock<INavNode> MockNavNode(bool mockName = true, bool mockVisibility = true)
+            {
+                var node = new Mock<INavNode>(MockBehavior.Strict);
+
+                if (mockName)
+                {
+                    var name = _fixture.Create<string>();
+                    node.Setup(n => n.Name).Returns(name);
+                }
+
+                if (mockVisibility)
+                {
+                    var visibilityToReturn = _fixture.Create<NodeVisibility>();
+                    node.Setup(n => n.EvaluateVisibility(It.IsAny<ViewContext>())).Returns(visibilityToReturn);
+                }
+
+                return node;
+            }
+
+            public ViewContext ViewContext()
+            {
+                return new ViewContext();
+            }
+        }
 
     }
 
