@@ -12,7 +12,7 @@ namespace SmartNav.Tests
     {
         private readonly Fixture _fixture = new Fixture();
 
-        #region Build
+        #region Build validation
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentNullException))]
@@ -40,6 +40,8 @@ namespace SmartNav.Tests
             // Assert		
             // expected exception of type ArgumentNullException
         }
+        #endregion
+        #region NavTree
 
         [TestMethod]
         public void Build_must_create_INavTreeViewModel()
@@ -55,6 +57,22 @@ namespace SmartNav.Tests
             actual.Should().BeAssignableTo<INavTreeViewModel>();
         }
 
+
+        [TestMethod]
+        public void Build_must_create_tree_with_ViewContext()
+        {
+            // Arrange	
+            var sut = MakeSut();
+            var expectedViewContext = any.ViewContext();
+
+            // Act
+            var actual = sut.Build(expectedViewContext, any.NavSpecification());
+
+            // Assert		
+            actual.CallingViewContext.Should().Be(expectedViewContext);
+        }
+
+
         [TestMethod]
         public void Build_must_create_tree_with_INavRootViewModel()
         {
@@ -68,6 +86,11 @@ namespace SmartNav.Tests
             actualRoot.Should().NotBeNull();
             actualRoot.Should().BeAssignableTo<INavRootViewModel>();
         }
+
+        #endregion
+
+        #region Root of NavTree
+
 
         [TestMethod]
         public void Build_must_create_tree_with_Root_Name_equivalent_to_Spec_Root()
@@ -105,20 +128,6 @@ namespace SmartNav.Tests
             actualRoot.VisibilityReason.Should().Be(nodeVisibility.Explanation);
         }
 
-        [TestMethod]
-        public void Build_must_create_tree_with_ViewContext()
-        {
-            // Arrange	
-            var sut = MakeSut();
-            var expectedViewContext = any.ViewContext();
-
-            // Act
-            var actual = sut.Build(expectedViewContext, any.NavSpecification());
-
-            // Assert		
-            actual.CallingViewContext.Should().Be(expectedViewContext);
-        }
-
 
         #endregion
 
@@ -134,9 +143,9 @@ namespace SmartNav.Tests
 
         #endregion
 
-// ReSharper disable InconsistentNaming
-        private Mother any { get { return new Mother(_fixture); } }
-// ReSharper restore InconsistentNaming
+        // ReSharper disable InconsistentNaming
+        private Mother any { get { return new NavBuilderTest.Mother(_fixture); } }
+        // ReSharper restore InconsistentNaming
 
         private class Mother
         {
