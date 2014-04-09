@@ -147,6 +147,25 @@ namespace SmartNav.Tests
             actualRoot.EnablementReason.Should().Be(nodeEnablement.Explanation, "Root.EnablementReason");
         }
 
+        [TestMethod]
+        public void Build_must_create_tree_with_Root_Activation_equivalent_to_Spec_Root_EvaluateActivation()
+        {
+            // Arrange		
+            var sut = MakeSut();
+            var viewContext = any.ViewContext();
+            var nodeEnablement = _fixture.Create<NodeActivation>();
+            var specRoot = any.MockNavNode(mockActivation: false);
+            specRoot.Setup(r => r.EvaluateActivation(viewContext)).Returns(nodeEnablement);
+            var spec = any.NavSpecification(specRoot.Object);
+
+            // Act
+            var actualRoot = sut.Build(viewContext, spec).Root;
+
+            // Assert		
+            actualRoot.IsActive.Should().Be(nodeEnablement.IsActive, "Root.IsActive");
+            actualRoot.ActivationReason.Should().Be(nodeEnablement.Explanation, "Root.ActivationReason");
+        }
+
         #endregion
 
         #region Test Helper Methods
@@ -187,7 +206,10 @@ namespace SmartNav.Tests
             }
 
 
-            public Mock<INavNode> MockNavNode(bool mockName = true, bool mockVisibility = true, bool mockEnablement = true)
+            public Mock<INavNode> MockNavNode(bool mockName = true,
+                bool mockVisibility = true,
+                bool mockEnablement = true,
+                bool mockActivation = true)
             {
                 var node = new Mock<INavNode>(MockBehavior.Strict);
 
@@ -209,6 +231,12 @@ namespace SmartNav.Tests
                     node.Setup(n => n.EvaluateEnablement(It.IsAny<ViewContext>())).Returns(enablementToReturn);
                 }
 
+                if (mockActivation)
+                {
+                    var activationToReturn = _fixture.Create<NodeActivation>();
+                    node.Setup(n => n.EvaluateActivation(It.IsAny<ViewContext>())).Returns(activationToReturn);
+                }
+
                 return node;
             }
 
@@ -218,6 +246,21 @@ namespace SmartNav.Tests
             }
         }
 
+    }
+
+    public sealed class NodeActivation
+    {
+        private readonly bool _active;
+        private readonly string _explanation;
+
+        public NodeActivation(bool active, string explanation)
+        {
+            _active = active;
+            _explanation = explanation;
+        }
+
+        public bool IsActive { get { return _active; } }
+        public string Explanation { get { return _explanation; } }
     }
 
     public sealed class NodeEnablement
@@ -255,6 +298,7 @@ namespace SmartNav.Tests
         string Name { get; }
         NodeVisibility EvaluateVisibility(ViewContext viewContext);
         NodeEnablement EvaluateEnablement(ViewContext viewContext);
+        NodeActivation EvaluateActivation(ViewContext viewContext);
     }
 
     public interface INavSpecification
@@ -272,6 +316,7 @@ namespace SmartNav.Tests
             var rootNode = navSpec.Root;
             var rootVisibility = rootNode.EvaluateVisibility(viewContext);
             var rootEnablement = rootNode.EvaluateEnablement(viewContext);
+            var rootActivation = rootNode.EvaluateActivation(viewContext);
             var rootView = new NavRootView()
                        {
                            Name = rootNode.Name,
@@ -280,7 +325,10 @@ namespace SmartNav.Tests
                            VisibilityReason = rootVisibility.Explanation,
 
                            IsEnabled = rootEnablement.IsEnabled,
-                           EnablementReason = rootEnablement.Explanation
+                           EnablementReason = rootEnablement.Explanation,
+
+                           IsActive = rootActivation.IsActive,
+                           ActivationReason = rootActivation.Explanation
                        };
 
 
@@ -296,6 +344,8 @@ namespace SmartNav.Tests
         public string VisibilityReason { get; set; }
         public bool IsEnabled { get; set; }
         public string EnablementReason { get; set; }
+        public bool IsActive { get; set; }
+        public string ActivationReason { get; set; }
     }
 
     internal class NavTreeView : INavTreeViewModel
@@ -328,5 +378,7 @@ namespace SmartNav.Tests
         string VisibilityReason { get; }
         bool IsEnabled { get; }
         string EnablementReason { get; }
+        bool IsActive { get; }
+        string ActivationReason { get; }
     }
 }
