@@ -1,9 +1,11 @@
 ﻿using System;
+using System.CodeDom;
 using System.Web.Mvc;
 using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using Ploeh.AutoFixture;
+using Ploeh.SemanticComparison.Fluent;
 
 namespace SmartNav.Tests
 {
@@ -93,6 +95,25 @@ namespace SmartNav.Tests
 
 
         [TestMethod]
+        public void Build_must_create_tree_with_Root_Properties_equivalent_to_Spec_EvaluateNode()
+        {
+            // Arrange		
+            var sut = MakeSut();
+            var viewContext = any.ViewContext();
+
+            var specRoot = new Mock<INavNode>();
+            var navNodeProperties = _fixture.Create<NavNodeProperties>();
+            specRoot.Setup(r => r.EvaluateNode(viewContext)).Returns(navNodeProperties);
+            var spec = any.NavSpecification(specRoot.Object);
+
+            // Acts
+            var actualRoot = sut.Build(viewContext, spec).Root;
+
+            // Assert	
+            AssertNodeViewMatchesProperties(actualRoot, navNodeProperties);
+        }
+
+        [TestMethod]
         public void Build_must_create_tree_with_Root_Name_equivalent_to_Spec_Root()
         {
             // Arrange		
@@ -109,81 +130,6 @@ namespace SmartNav.Tests
             actualRoot.Name.Should().Be(expectedNodeName);
         }
 
-        [TestMethod]
-        public void Build_must_create_tree_with_Root_Visibility_equivalent_to_Spec_Root_EvaluateVisibility()
-        {
-            // Arrange		
-            var sut = MakeSut();
-            var viewContext = any.ViewContext();
-            var nodeVisibility = _fixture.Create<NodeVisibility>();
-            var specRoot = any.MockNavNode(mockVisibility: false);
-            specRoot.Setup(r => r.EvaluateVisibility(viewContext)).Returns(nodeVisibility);
-            var spec = any.NavSpecification(specRoot.Object);
-
-            // Act
-            var actualRoot = sut.Build(viewContext, spec).Root;
-
-            // Assert		
-            actualRoot.IsVisible.Should().Be(nodeVisibility.IsVisible, "Root.IsVisible");
-            actualRoot.VisibilityReason.Should().Be(nodeVisibility.Explanation, "Root.VisibilityReason");
-        }
-
-        [TestMethod]
-        public void Build_must_create_tree_with_Root_Enablement_equivalent_to_Spec_Root_EvaluateEnablement()
-        {
-            // Arrange		
-            var sut = MakeSut();
-            var viewContext = any.ViewContext();
-            var nodeEnablement = _fixture.Create<NodeEnablement>();
-            var specRoot = any.MockNavNode(mockEnablement: false);
-            specRoot.Setup(r => r.EvaluateEnablement(viewContext)).Returns(nodeEnablement);
-            var spec = any.NavSpecification(specRoot.Object);
-
-            // Act
-            var actualRoot = sut.Build(viewContext, spec).Root;
-
-            // Assert		
-            actualRoot.IsEnabled.Should().Be(nodeEnablement.IsEnabled, "Root.IsEnabled");
-            actualRoot.EnablementReason.Should().Be(nodeEnablement.Explanation, "Root.EnablementReason");
-        }
-
-        [TestMethod]
-        public void Build_must_create_tree_with_Root_Activation_equivalent_to_Spec_Root_EvaluateActivation()
-        {
-            // Arrange		
-            var sut = MakeSut();
-            var viewContext = any.ViewContext();
-            var nodeEnablement = _fixture.Create<NodeActivation>();
-            var specRoot = any.MockNavNode(mockActivation: false);
-            specRoot.Setup(r => r.EvaluateActivation(viewContext)).Returns(nodeEnablement);
-            var spec = any.NavSpecification(specRoot.Object);
-
-            // Act
-            var actualRoot = sut.Build(viewContext, spec).Root;
-
-            // Assert		
-            actualRoot.IsActive.Should().Be(nodeEnablement.IsActive, "Root.IsActive");
-            actualRoot.ActivationReason.Should().Be(nodeEnablement.Explanation, "Root.ActivationReason");
-        }
-
-        [TestMethod]
-        public void Build_must_create_tree_with_Root_Url_equivalent_to_Spec_Root_EvaluateUrl()
-        {
-            // Arrange		
-            var sut = MakeSut();
-            var viewContext = any.ViewContext();
-            var url = _fixture.Create<Uri>().ToString();
-            var specRoot = any.MockNavNode(mockUrl: false);
-            specRoot.Setup(r => r.EvaluateTargetUrl(viewContext)).Returns(url);
-            var spec = any.NavSpecification(specRoot.Object);
-
-            // Act
-            var actualRoot = sut.Build(viewContext, spec).Root;
-
-            // Assert		
-            actualRoot.Url.Should().Be(url, "Root.Url");
-        }
-
         #endregion
 
         #region Test Helper Methods
@@ -193,11 +139,12 @@ namespace SmartNav.Tests
             return new NavBuilder();
         }
 
-
         #endregion
 
         // ReSharper disable InconsistentNaming
+
         private Mother any { get { return new NavBuilderTest.Mother(_fixture); } }
+
         // ReSharper restore InconsistentNaming
 
         private class Mother
@@ -225,11 +172,8 @@ namespace SmartNav.Tests
 
 
             public Mock<INavNode> MockNavNode(
-                bool mockName       = true,
-                bool mockUrl        = true,
-                bool mockVisibility = true,
-                bool mockEnablement = true,
-                bool mockActivation = true)
+                bool mockName = true,
+                bool mockProperties = true)
             {
                 var node = new Mock<INavNode>(MockBehavior.Strict);
 
@@ -239,29 +183,13 @@ namespace SmartNav.Tests
                     node.Setup(n => n.Name).Returns(name);
                 }
 
-                if (mockUrl)
+                if (mockProperties)
                 {
-                    var url = _fixture.Create<Uri>().ToString();
-                    node.Setup(n => n.EvaluateTargetUrl(It.IsAny<ViewContext>())).Returns(url);
+                    var props = _fixture.Create<NavNodeProperties>();
+                    node.Setup(n => n.EvaluateNode(It.IsAny<ViewContext>())).Returns(props);
                 }
 
-                if (mockVisibility)
-                {
-                    var visibilityToReturn = _fixture.Create<NodeVisibility>();
-                    node.Setup(n => n.EvaluateVisibility(It.IsAny<ViewContext>())).Returns(visibilityToReturn);
-                }
 
-                if (mockEnablement)
-                {
-                    var enablementToReturn = _fixture.Create<NodeEnablement>();
-                    node.Setup(n => n.EvaluateEnablement(It.IsAny<ViewContext>())).Returns(enablementToReturn);
-                }
-
-                if (mockActivation)
-                {
-                    var activationToReturn = _fixture.Create<NodeActivation>();
-                    node.Setup(n => n.EvaluateActivation(It.IsAny<ViewContext>())).Returns(activationToReturn);
-                }
 
                 return node;
             }
@@ -272,6 +200,40 @@ namespace SmartNav.Tests
             }
         }
 
+        private static void AssertNodeViewMatchesProperties(INavRootViewModel actualRoot, NavNodeProperties navNodeProperties)
+        {
+
+            actualRoot.AsSource().OfLikeness<INavNodeProperties>()
+                .With(p=> p.Activation)
+                    .EqualsWhen((vm, props) => vm.IsActive == props.Activation.IsActive 
+                        && vm.ActivationReason == props.Activation.Explanation )
+                .With(p => p.Visibility)
+                    .EqualsWhen((vm, props) => vm.IsVisible == props.Visibility.IsVisible
+                        && vm.VisibilityReason == props.Visibility.Explanation)
+                .With(p => p.Enablement)
+                    .EqualsWhen((vm, props) => vm.IsEnabled == props.Enablement.IsEnabled
+                        && vm.EnablementReason == props.Enablement.Explanation)
+                .With(p => p.TargetUrl)
+                    .EqualsWhen((vm, props) => vm.Url == props.TargetUrl)
+                .ShouldEqual(navNodeProperties);
+        }
+    }
+
+    public interface INavNodeProperties
+    {
+        NodeActivation Activation { get; }
+        NodeVisibility Visibility { get; }
+        NodeEnablement Enablement { get; }
+
+        string TargetUrl { get; }
+    }
+
+    class NavNodeProperties : INavNodeProperties
+    {
+        public NodeActivation Activation { get; set; }
+        public NodeVisibility Visibility { get; set; }
+        public NodeEnablement Enablement { get; set; }
+        public string TargetUrl { get; set; }
     }
 
     public sealed class NodeActivation
@@ -326,6 +288,7 @@ namespace SmartNav.Tests
         NodeEnablement EvaluateEnablement(ViewContext viewContext);
         NodeActivation EvaluateActivation(ViewContext viewContext);
         string EvaluateTargetUrl(ViewContext viewContext);
+        INavNodeProperties EvaluateNode(ViewContext viewContext);
     }
 
     public interface INavSpecification
@@ -340,25 +303,13 @@ namespace SmartNav.Tests
             if (viewContext == null) throw new ArgumentNullException("viewContext");
             if (navSpec == null) throw new ArgumentNullException("navSpec");
 
+
             var rootNode = navSpec.Root;
-            var rootVisibility = rootNode.EvaluateVisibility(viewContext);
-            var rootEnablement = rootNode.EvaluateEnablement(viewContext);
-            var rootActivation = rootNode.EvaluateActivation(viewContext);
-            var rootUrl = rootNode.EvaluateTargetUrl(viewContext);
-            var rootView = new NavRootView()
-                       {
-                           Name = rootNode.Name,
-                           Url = rootUrl,
-
-                           IsVisible = rootVisibility.IsVisible,
-                           VisibilityReason = rootVisibility.Explanation,
-
-                           IsEnabled = rootEnablement.IsEnabled,
-                           EnablementReason = rootEnablement.Explanation,
-
-                           IsActive = rootActivation.IsActive,
-                           ActivationReason = rootActivation.Explanation
-                       };
+            var rootProperties = rootNode.EvaluateNode(viewContext);
+            var rootView = new NavRootView(rootProperties)
+                           {
+                               Name = rootNode.Name
+                           };
 
             return new NavTreeView(rootView, viewContext);
         }
@@ -366,14 +317,50 @@ namespace SmartNav.Tests
 
     public class NavRootView : INavRootViewModel
     {
+        private readonly INavNodeProperties _props;
+
+        public NavRootView(INavNodeProperties props)
+        {
+            if (props == null) throw new ArgumentNullException("props");
+            _props = props;
+        }
+
         public string Name { get; set; }
-        public bool IsVisible { get; set; }
-        public string VisibilityReason { get; set; }
-        public bool IsEnabled { get; set; }
-        public string EnablementReason { get; set; }
-        public bool IsActive { get; set; }
-        public string ActivationReason { get; set; }
-        public string Url { get; set; }
+
+        public bool IsVisible
+        {
+            get { return _props.Visibility.IsVisible; }
+        }
+
+        public string VisibilityReason
+        {
+            get { return _props.Visibility.Explanation; }
+        }
+
+        public bool IsEnabled
+        {
+            get { return _props.Enablement.IsEnabled; }
+        }
+
+        public string EnablementReason
+        {
+            get { return _props.Enablement.Explanation; }
+        }
+
+        public bool IsActive
+        {
+            get { return _props.Activation.IsActive; }
+        }
+
+        public string ActivationReason
+        {
+            get { return _props.Activation.Explanation; }
+        }
+
+        public string Url
+        {
+            get { return _props.TargetUrl; }
+        }
     }
 
     internal class NavTreeView : INavTreeViewModel
@@ -408,6 +395,6 @@ namespace SmartNav.Tests
         string EnablementReason { get; }
         bool IsActive { get; }
         string ActivationReason { get; }
-        string Url { get;}
+        string Url { get; }
     }
 }
