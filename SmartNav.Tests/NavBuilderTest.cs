@@ -77,7 +77,7 @@ namespace SmartNav.Tests
 
 
         [TestMethod]
-        public void Build_must_create_tree_with_INavRootViewModel()
+        public void Build_must_create_tree_with_INavComponentViewModel()
         {
             // Arrange		
             var sut = MakeSut();
@@ -87,7 +87,7 @@ namespace SmartNav.Tests
 
             // Assert		
             actualRoot.Should().NotBeNull();
-            actualRoot.Should().BeAssignableTo<INavRootViewModel>();
+            actualRoot.Should().BeAssignableTo<INavComponentViewModel>();
         }
 
         #endregion
@@ -379,7 +379,7 @@ namespace SmartNav.Tests
         }
     }
 
-    public class NavRootView : NavItemViewBase, INavRootViewModel
+    public class NavRootView : NavItemViewBase
     {
         public NavRootView(string name, INavNodeProperties props)
             : base(name, props)
@@ -481,19 +481,14 @@ namespace SmartNav.Tests
             _callingViewContext = callingViewContext;
         }
 
-        public INavRootViewModel Root { get { return _navRootView; } }
+        public INavComponentViewModel Root { get { return _navRootView; } }
         public ViewContext CallingViewContext { get { return _callingViewContext; } }
     }
 
     public interface INavTreeViewModel
     {
-        INavRootViewModel Root { get; }
+        INavComponentViewModel Root { get; }
         ViewContext CallingViewContext { get; }
-    }
-
-    public interface INavRootViewModel : INavComponentViewModel
-    {
-
     }
 
     public interface INavComponentViewModel
