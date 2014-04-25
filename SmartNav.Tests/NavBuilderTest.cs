@@ -1,5 +1,6 @@
 ﻿using System;
-using System.CodeDom;
+using System.Collections.Generic;
+using System.Linq;
 using System.Web.Mvc;
 using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -101,7 +102,7 @@ namespace SmartNav.Tests
             var sut = MakeSut();
             var viewContext = any.ViewContext();
 
-            var specRoot = new Mock<INavNode>();
+            var specRoot = any.MockNavNode();
             var navNodeProperties = _fixture.Create<NavNodeProperties>();
             specRoot.Setup(r => r.EvaluateNode(viewContext)).Returns(navNodeProperties);
             var spec = any.NavSpecification(specRoot.Object);
@@ -119,7 +120,7 @@ namespace SmartNav.Tests
             // Arrange		
             var sut = MakeSut();
             var expectedNodeName = _fixture.Create<string>();
-            var specRoot = any.MockNavNode(mockName: false);
+            var specRoot = any.MockNavNode();
             specRoot.Setup(r => r.Name).Returns(expectedNodeName);
             var spec = any.NavSpecification(specRoot.Object);
 
@@ -131,6 +132,74 @@ namespace SmartNav.Tests
         }
 
         #endregion
+
+        #region Tree structure
+
+        [TestMethod]
+        public void Build_with_Spec_with_one_child_must_create_child()
+        {
+            // Arrange		
+            var sut = MakeSut();
+            var childSpec = any.MockNavNode().Object;
+            var children = new List<INavNode> { childSpec };
+            var specRoot = any.MockNavNode();
+            specRoot.Setup(r => r.Children).Returns(children);
+            var spec = any.NavSpecification(specRoot.Object);
+
+            // Act
+            var actualChildren = sut.Build(any.ViewContext(), spec).Root.Children.ToList();
+
+            // Assert		
+            actualChildren.Should().NotBeNull("it should return children");
+            actualChildren.Should().HaveCount(1, "there should be one child");
+        }
+
+        [TestMethod]
+        public void Build_with_Spec_with_child_must_create_child_with_Name_from_spec()
+        {
+            // Arrange		
+            var sut = MakeSut();
+            var childName = _fixture.Create<string>();
+            var childSpec = any.MockNavNode();
+            childSpec.Setup(s => s.Name).Returns(childName);
+            var children = new List<INavNode> { childSpec.Object };
+            var specRoot = any.MockNavNode();
+            specRoot.Setup(r => r.Children).Returns(children);
+            var spec = any.NavSpecification(specRoot.Object);
+
+            // Act
+            var actualChild = sut.Build(any.ViewContext(), spec).Root.Children.SingleOrDefault();
+
+            // Assert		
+            actualChild.Should().NotBeNull("it should return child");
+            actualChild.Name.Should().Be(childName);
+        }
+
+        [TestMethod]
+        public void Build_with_spec_with_child_must_create_child_with_Properties_equivalent_to_spec()
+        {
+            // Arrange		
+            var sut = MakeSut();
+            var viewContext = any.ViewContext();
+
+            var childSpec = any.MockNavNode();
+            var navNodeProperties = _fixture.Create<NavNodeProperties>();
+            childSpec.Setup(r => r.EvaluateNode(viewContext)).Returns(navNodeProperties);
+            var children = new List<INavNode> { childSpec.Object };
+            var specRoot = any.MockNavNode();
+            specRoot.Setup(r => r.Children).Returns(children);
+
+            var spec = any.NavSpecification(specRoot.Object);
+
+            // Acts
+            var actualChild = sut.Build(viewContext, spec).Root.Children.SingleOrDefault();
+
+            // Assert	
+            AssertNodeViewMatchesProperties(actualChild, navNodeProperties);
+        }
+
+        #endregion
+
 
         #region Test Helper Methods
 
@@ -171,25 +240,17 @@ namespace SmartNav.Tests
             }
 
 
-            public Mock<INavNode> MockNavNode(
-                bool mockName = true,
-                bool mockProperties = true)
+            public Mock<INavNode> MockNavNode()
             {
                 var node = new Mock<INavNode>(MockBehavior.Strict);
+                node.Setup(n => n.Children).Returns(Enumerable.Empty<INavNode>);
 
-                if (mockName)
-                {
-                    var name = _fixture.Create<string>();
-                    node.Setup(n => n.Name).Returns(name);
-                }
-
-                if (mockProperties)
-                {
-                    var props = _fixture.Create<NavNodeProperties>();
-                    node.Setup(n => n.EvaluateNode(It.IsAny<ViewContext>())).Returns(props);
-                }
+                var name = _fixture.Create<string>();
+                node.Setup(n => n.Name).Returns(name);
 
 
+                var props = _fixture.Create<NavNodeProperties>();
+                node.Setup(n => n.EvaluateNode(It.IsAny<ViewContext>())).Returns(props);
 
                 return node;
             }
@@ -200,13 +261,13 @@ namespace SmartNav.Tests
             }
         }
 
-        private static void AssertNodeViewMatchesProperties(INavRootViewModel actualRoot, NavNodeProperties navNodeProperties)
+        private static void AssertNodeViewMatchesProperties(INavComponentViewModel actualRoot, NavNodeProperties navNodeProperties)
         {
 
             actualRoot.AsSource().OfLikeness<INavNodeProperties>()
-                .With(p=> p.Activation)
-                    .EqualsWhen((vm, props) => vm.IsActive == props.Activation.IsActive 
-                        && vm.ActivationReason == props.Activation.Explanation )
+                .With(p => p.Activation)
+                    .EqualsWhen((vm, props) => vm.IsActive == props.Activation.IsActive
+                        && vm.ActivationReason == props.Activation.Explanation)
                 .With(p => p.Visibility)
                     .EqualsWhen((vm, props) => vm.IsVisible == props.Visibility.IsVisible
                         && vm.VisibilityReason == props.Visibility.Explanation)
@@ -284,6 +345,7 @@ namespace SmartNav.Tests
     public interface INavNode
     {
         string Name { get; }
+        IEnumerable<INavNode> Children { get; }
         NodeVisibility EvaluateVisibility(ViewContext viewContext);
         NodeEnablement EvaluateEnablement(ViewContext viewContext);
         NodeActivation EvaluateActivation(ViewContext viewContext);
@@ -306,26 +368,61 @@ namespace SmartNav.Tests
 
             var rootNode = navSpec.Root;
             var rootProperties = rootNode.EvaluateNode(viewContext);
-            var rootView = new NavRootView(rootProperties)
-                           {
-                               Name = rootNode.Name
-                           };
+            var rootView = new NavRootView(rootNode.Name, rootProperties);
+            foreach (var navNode in rootNode.Children)
+            {
+                var nodeProperties = navNode.EvaluateNode(viewContext);
+                rootView.AddChild(new NavItemView(navNode.Name, nodeProperties));
+            }
 
             return new NavTreeView(rootView, viewContext);
         }
     }
 
-    public class NavRootView : INavRootViewModel
+    public class NavRootView : NavItemViewBase, INavRootViewModel
     {
-        private readonly INavNodeProperties _props;
-
-        public NavRootView(INavNodeProperties props)
+        public NavRootView(string name, INavNodeProperties props)
+            : base(name, props)
         {
-            if (props == null) throw new ArgumentNullException("props");
-            _props = props;
         }
 
-        public string Name { get; set; }
+        public NavRootView AddChild(NavItemView navItemView)
+        {
+            base.AddChild(navItemView);
+            return this;
+        }
+    }
+
+    public class NavItemView : NavItemViewBase
+    {
+        public NavItemView(string name, INavNodeProperties props)
+            : base(name, props)
+        {
+        }
+
+        public NavItemView AddChild(NavItemView navItemView)
+        {
+            base.AddChild(navItemView);
+            return this;
+        }
+    }
+
+    public abstract class NavItemViewBase : INavComponentViewModel
+    {
+        private readonly string _name;
+        private readonly INavNodeProperties _props;
+        private readonly List<INavComponentViewModel> _children;
+
+        protected NavItemViewBase(string name, INavNodeProperties props)
+        {
+            if (name == null) throw new ArgumentNullException("name");
+            if (props == null) throw new ArgumentNullException("props");
+            _name = name;
+            _props = props;
+            _children = new List<INavComponentViewModel>();
+        }
+
+        public string Name { get { return _name; } }
 
         public bool IsVisible
         {
@@ -361,6 +458,14 @@ namespace SmartNav.Tests
         {
             get { return _props.TargetUrl; }
         }
+
+        public IEnumerable<INavComponentViewModel> Children { get { return _children; } }
+
+        protected void AddChild(INavComponentViewModel child)
+        {
+            _children.Add(child);
+        }
+
     }
 
     internal class NavTreeView : INavTreeViewModel
@@ -386,7 +491,12 @@ namespace SmartNav.Tests
         ViewContext CallingViewContext { get; }
     }
 
-    public interface INavRootViewModel
+    public interface INavRootViewModel : INavComponentViewModel
+    {
+
+    }
+
+    public interface INavComponentViewModel
     {
         string Name { get; }
         bool IsVisible { get; }
@@ -396,5 +506,6 @@ namespace SmartNav.Tests
         bool IsActive { get; }
         string ActivationReason { get; }
         string Url { get; }
+        IEnumerable<INavComponentViewModel> Children { get; }
     }
 }
