@@ -62,5 +62,9 @@ namespace SmartNav.Tests.NavView
             _children.Add(child);
         }
 
+        public void AddChild(NavItemView navItemView)
+        {
+            AddChild((INavComponentViewModel) navItemView);            
+        }
     }
 }

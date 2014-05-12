@@ -200,6 +200,47 @@ namespace SmartNav.Tests
             AssertNodeViewMatchesProperties(actualChild, navNodeProperties);
         }
 
+        [TestMethod]
+        public void Build_with_spec_with_2_children_must_create_2_children()
+        {
+            // Arrange		
+            var sut = MakeSut();
+
+            var childSpecs = new List<INavNode> { any.MockNavNode().Object, any.MockNavNode().Object, any.MockNavNode().Object };
+
+            var specRoot = any.MockNavNode();
+            specRoot.Setup(r => r.Children).Returns(childSpecs);
+
+            var spec = any.NavSpecification(specRoot.Object);
+
+            // Act
+            var actualChildren = sut.Build(any.ViewContext(), spec).Root.Children.ToList();
+
+            // Assert		
+            actualChildren.Should().HaveCount(childSpecs.Count);
+        }
+
+        [TestMethod]
+        public void Build_with_spec_children_level_2_must_create_2_levels()
+        {
+            // Arrange		
+            var sut = MakeSut();
+            var grandChildSpec = any.MockNavNode().Object;
+            var childSpec = any.MockNavNode();
+            childSpec.Setup(s => s.Children).Returns(new List<INavNode> { grandChildSpec });
+
+            var specRoot = any.MockNavNode();
+            specRoot.Setup(r => r.Children).Returns(new List<INavNode> { childSpec.Object });
+
+            var spec = any.NavSpecification(specRoot.Object);
+
+            // Act
+            var actualGrandChild = sut.Build(any.ViewContext(), spec).Root.Children.Single().Children.SingleOrDefault();
+            // Assert		
+            actualGrandChild.Should().NotBeNull("there should be 2 levels");
+            actualGrandChild.Name.Should().Be(grandChildSpec.Name, "it should have the name taken from spec");
+        }
+
         #endregion
 
 
@@ -263,7 +304,7 @@ namespace SmartNav.Tests
             }
         }
 
-        private static void AssertNodeViewMatchesProperties(INavComponentViewModel actualRoot, NavNodeProperties navNodeProperties)
+        private static void AssertNodeViewMatchesProperties(INavComponentViewModel actualRoot, INavNodeProperties navNodeProperties)
         {
 
             actualRoot.AsSource().OfLikeness<INavNodeProperties>()
@@ -289,17 +330,26 @@ namespace SmartNav.Tests
             if (viewContext == null) throw new ArgumentNullException("viewContext");
             if (navSpec == null) throw new ArgumentNullException("navSpec");
 
-
             var rootNode = navSpec.Root;
             var rootProperties = rootNode.EvaluateNode(viewContext);
             var rootView = new NavRootView(rootNode.Name, rootProperties);
-            foreach (var navNode in rootNode.Children)
-            {
-                var nodeProperties = navNode.EvaluateNode(viewContext);
-                rootView.AddChild(new NavItemView(navNode.Name, nodeProperties));
-            }
+
+            AddChildrenRecursively(rootView, rootNode.Children, viewContext);
 
             return new NavTreeView(rootView, viewContext);
         }
+
+        private void AddChildrenRecursively(NavItemViewBase rootToAddTo, IEnumerable<INavNode> childrenSpecs, ViewContext context)
+        {
+            foreach (var navNode in childrenSpecs)
+            {
+                var nodeProperties = navNode.EvaluateNode(context);
+                var child = new NavItemView(navNode.Name, nodeProperties);
+                AddChildrenRecursively(child, navNode.Children, context);
+                rootToAddTo.AddChild(child);
+            }
+        }
+
+
     }
 }

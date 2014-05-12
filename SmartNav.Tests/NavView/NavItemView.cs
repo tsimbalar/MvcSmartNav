@@ -6,11 +6,5 @@ namespace SmartNav.Tests.NavView
             : base(name, props)
         {
         }
-
-        public NavItemView AddChild(NavItemView navItemView)
-        {
-            base.AddChild(navItemView);
-            return this;
-        }
     }
 }
