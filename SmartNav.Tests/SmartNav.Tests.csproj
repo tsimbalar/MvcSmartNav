@@ -92,8 +92,21 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="NavView\INavComponentViewModel.cs" />
+    <Compile Include="NavSpec\INavNode.cs" />
+    <Compile Include="NavCore\INavNodeProperties.cs" />
+    <Compile Include="NavSpec\INavSpecification.cs" />
+    <Compile Include="NavView\INavTreeViewModel.cs" />
     <Compile Include="NavBuilderTest.cs" />
+    <Compile Include="NavView\NavItemView.cs" />
+    <Compile Include="NavView\NavItemViewBase.cs" />
+    <Compile Include="NavCore\NavNodeProperties.cs" />
+    <Compile Include="NavView\NavRootView.cs" />
+    <Compile Include="NavView\NavTreeView.cs" />
     <Compile Include="NavTreeViewTest.cs" />
+    <Compile Include="NavCore\NodeActivation.cs" />
+    <Compile Include="NavCore\NodeEnablement.cs" />
+    <Compile Include="NavCore\NodeVisibility.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
