@@ -2,8 +2,8 @@ namespace SmartNav.Tests.NavView
 {
     public class NavRootView : NavItemViewBase
     {
-        public NavRootView(string name, INavNodeProperties props)
-            : base(name, props)
+        public NavRootView(string id, string name, INavNodeProperties props)
+            : base(id, 0, name, props)
         {
         }
     }

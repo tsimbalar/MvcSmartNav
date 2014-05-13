@@ -5,14 +5,19 @@ namespace SmartNav.Tests.NavView
 {
     public abstract class NavItemViewBase : INavComponentViewModel
     {
+        private readonly string _id;
+        private readonly int _level;
         private readonly string _name;
         private readonly INavNodeProperties _props;
         private readonly List<INavComponentViewModel> _children;
 
-        protected NavItemViewBase(string name, INavNodeProperties props)
+        protected NavItemViewBase(string id, int level, string name, INavNodeProperties props)
         {
+            if (id == null) throw new ArgumentNullException("id");
             if (name == null) throw new ArgumentNullException("name");
             if (props == null) throw new ArgumentNullException("props");
+            _id = id;
+            _level = level;
             _name = name;
             _props = props;
             _children = new List<INavComponentViewModel>();
@@ -56,6 +61,13 @@ namespace SmartNav.Tests.NavView
         }
 
         public IEnumerable<INavComponentViewModel> Children { get { return _children; } }
+
+        public string Id
+        {
+            get { return _id; }
+        }
+
+        public int Level { get { return _level; } }
 
         public void AddChild(INavComponentViewModel child)
         {

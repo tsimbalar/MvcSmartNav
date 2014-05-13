@@ -1,0 +1,172 @@
+[1mdiff --git a/SmartNav.Tests/NavBuilderTest.cs b/SmartNav.Tests/NavBuilderTest.cs[m
+[1mindex cb34c54..04a0591 100644[m
+[1m--- a/SmartNav.Tests/NavBuilderTest.cs[m
+[1m+++ b/SmartNav.Tests/NavBuilderTest.cs[m
+[36m@@ -106,7 +106,7 @@[m [mpublic void Build_must_create_tree_with_Root_Properties_equivalent_to_Spec_Evalu[m
+ [m
+             var specRoot = any.MockNavNode();[m
+             var navNodeProperties = _fixture.Create<NavNodeProperties>();[m
+[31m-            specRoot.Setup(r => r.EvaluateNode(viewContext)).Returns(navNodeProperties);[m
+[32m+[m[32m            specRoot.Setup(r => r.Evaluate(viewContext)).Returns(navNodeProperties);[m[41m[m
+             var spec = any.NavSpecification(specRoot.Object);[m
+ [m
+             // Acts[m
+[36m@@ -123,7 +123,7 @@[m [mpublic void Build_must_create_tree_with_Root_Name_equivalent_to_Spec_Root()[m
+             var sut = MakeSut();[m
+             var expectedNodeName = _fixture.Create<string>();[m
+             var specRoot = any.MockNavNode();[m
+[31m-            specRoot.Setup(r => r.Name).Returns(expectedNodeName);[m
+[32m+[m[32m            specRoot.Setup(r => r.Id).Returns(expectedNodeName);[m[41m[m
+             var spec = any.NavSpecification(specRoot.Object);[m
+ [m
+             // Act[m
+[36m@@ -163,7 +163,7 @@[m [mpublic void Build_with_Spec_with_child_must_create_child_with_Name_from_spec()[m
+             var sut = MakeSut();[m
+             var childName = _fixture.Create<string>();[m
+             var childSpec = any.MockNavNode();[m
+[31m-            childSpec.Setup(s => s.Name).Returns(childName);[m
+[32m+[m[32m            childSpec.Setup(s => s.Id).Returns(childName);[m[41m[m
+             var children = new List<INavNode> { childSpec.Object };[m
+             var specRoot = any.MockNavNode();[m
+             specRoot.Setup(r => r.Children).Returns(children);[m
+[36m@@ -186,7 +186,7 @@[m [mpublic void Build_with_spec_with_child_must_create_child_with_Properties_equival[m
+ [m
+             var childSpec = any.MockNavNode();[m
+             var navNodeProperties = _fixture.Create<NavNodeProperties>();[m
+[31m-            childSpec.Setup(r => r.EvaluateNode(viewContext)).Returns(navNodeProperties);[m
+[32m+[m[32m            childSpec.Setup(r => r.Evaluate(viewContext)).Returns(navNodeProperties);[m[41m[m
+             var children = new List<INavNode> { childSpec.Object };[m
+             var specRoot = any.MockNavNode();[m
+             specRoot.Setup(r => r.Children).Returns(children);[m
+[36m@@ -238,7 +238,7 @@[m [mpublic void Build_with_spec_children_level_2_must_create_2_levels()[m
+             var actualGrandChild = sut.Build(any.ViewContext(), spec).Root.Children.Single().Children.SingleOrDefault();[m
+             // Assert		[m
+             actualGrandChild.Should().NotBeNull("there should be 2 levels");[m
+[31m-            actualGrandChild.Name.Should().Be(grandChildSpec.Name, "it should have the name taken from spec");[m
+[32m+[m[32m            actualGrandChild.Name.Should().Be(grandChildSpec.Id, "it should have the name taken from spec");[m[41m[m
+         }[m
+ [m
+         #endregion[m
+[36m@@ -269,14 +269,14 @@[m [mpublic Mother(Fixture fixture)[m
+             }[m
+ [m
+ [m
+[31m-            public INavSpecification NavSpecification()[m
+[32m+[m[32m            public INavTreeSpecification NavSpecification()[m[41m[m
+             {[m
+                 return NavSpecification(MockNavNode().Object);[m
+             }[m
+ [m
+[31m-            public INavSpecification NavSpecification(INavNode root)[m
+[32m+[m[32m            public INavTreeSpecification NavSpecification(INavNode root)[m[41m[m
+             {[m
+[31m-                var result = new Mock<INavSpecification>(MockBehavior.Strict);[m
+[32m+[m[32m                var result = new Mock<INavTreeSpecification>(MockBehavior.Strict);[m[41m[m
+                 result.Setup(r => r.Root).Returns(root);[m
+ [m
+                 return result.Object;[m
+[36m@@ -289,11 +289,11 @@[m [mpublic Mock<INavNode> MockNavNode()[m
+                 node.Setup(n => n.Children).Returns(Enumerable.Empty<INavNode>);[m
+ [m
+                 var name = _fixture.Create<string>();[m
+[31m-                node.Setup(n => n.Name).Returns(name);[m
+[32m+[m[32m                node.Setup(n => n.Id).Returns(name);[m[41m[m
+ [m
+ [m
+                 var props = _fixture.Create<NavNodeProperties>();[m
+[31m-                node.Setup(n => n.EvaluateNode(It.IsAny<ViewContext>())).Returns(props);[m
+[32m+[m[32m                node.Setup(n => n.Evaluate(It.IsAny<ViewContext>())).Returns(props);[m[41m[m
+ [m
+                 return node;[m
+             }[m
+[36m@@ -325,14 +325,14 @@[m [mprivate static void AssertNodeViewMatchesProperties(INavComponentViewModel actua[m
+ [m
+     internal class NavBuilder[m
+     {[m
+[31m-        public INavTreeViewModel Build(ViewContext viewContext, INavSpecification navSpec)[m
+[32m+[m[32m        public INavTreeViewModel Build(ViewContext viewContext, INavTreeSpecification navTreeSpec)[m[41m[m
+         {[m
+             if (viewContext == null) throw new ArgumentNullException("viewContext");[m
+[31m-            if (navSpec == null) throw new ArgumentNullException("navSpec");[m
+[32m+[m[32m            if (navTreeSpec == null) throw new ArgumentNullException("navTreeSpec");[m[41m[m
+ [m
+[31m-            var rootNode = navSpec.Root;[m
+[31m-            var rootProperties = rootNode.EvaluateNode(viewContext);[m
+[31m-            var rootView = new NavRootView(rootNode.Name, rootProperties);[m
+[32m+[m[32m            var rootNode = navTreeSpec.Root;[m[41m[m
+[32m+[m[32m            var rootProperties = rootNode.Evaluate(viewContext);[m[41m[m
+[32m+[m[32m            var rootView = new NavRootView(rootNode.Id, rootProperties);[m[41m[m
+ [m
+             AddChildrenRecursively(rootView, rootNode.Children, viewContext);[m
+ [m
+[36m@@ -343,8 +343,8 @@[m [mprivate void AddChildrenRecursively(NavItemViewBase rootToAddTo, IEnumerable<INa[m
+         {[m
+             foreach (var navNode in childrenSpecs)[m
+             {[m
+[31m-                var nodeProperties = navNode.EvaluateNode(context);[m
+[31m-                var child = new NavItemView(navNode.Name, nodeProperties);[m
+[32m+[m[32m                var nodeProperties = navNode.Evaluate(context);[m[41m[m
+[32m+[m[32m                var child = new NavItemView(navNode.Id, nodeProperties);[m[41m[m
+                 AddChildrenRecursively(child, navNode.Children, context);[m
+                 rootToAddTo.AddChild(child);[m
+             }[m
+[1mdiff --git a/SmartNav.Tests/NavSpec/INavNode.cs b/SmartNav.Tests/NavSpec/INavNode.cs[m
+[1mindex 130287b..5b2309a 100644[m
+[1m--- a/SmartNav.Tests/NavSpec/INavNode.cs[m
+[1m+++ b/SmartNav.Tests/NavSpec/INavNode.cs[m
+[36m@@ -5,8 +5,26 @@[m [mnamespace SmartNav.Tests.NavSpec[m
+ {[m
+     public interface INavNode[m
+     {[m
+[32m+[m[32m        /// <summary>[m[41m[m
+[32m+[m[32m        /// Unique identifier for this item in the tree[m[41m[m
+[32m+[m[32m        /// </summary>[m[41m[m
+[32m+[m[32m        string Id { get; }[m[41m[m
+[32m+[m[41m[m
+[32m+[m[32m        /// <summary>[m[41m[m
+[32m+[m[32m        /// Display name for this item in the tree[m[41m[m
+[32m+[m[32m        /// </summary>[m[41m[m
+         string Name { get; }[m
+[32m+[m[41m[m
+[32m+[m[32m        /// <summary>[m[41m[m
+[32m+[m[32m        /// Node located right under this node[m[41m [m
+[32m+[m[32m        /// </summary>[m[41m[m
+         IEnumerable<INavNode> Children { get; }[m
+[31m-        INavNodeProperties EvaluateNode(ViewContext viewContext);[m
+[32m+[m[41m        [m
+[32m+[m[32m        /// <summary>[m[41m[m
+[32m+[m[32m        /// Evaluate properties for this node when rendering in the specified viewContext[m[41m [m
+[32m+[m[32m        /// </summary>[m[41m[m
+[32m+[m[32m        /// <param name="viewContext">the context in which the navigation is being rendered</param>[m[41m[m
+[32m+[m[32m        /// <returns></returns>[m[41m[m
+[32m+[m[32m        INavNodeProperties Evaluate(ViewContext viewContext);[m[41m[m
+     }[m
+ }[m
+\ No newline at end of file[m
+[1mdiff --git a/SmartNav.Tests/NavSpec/INavSpecification.cs b/SmartNav.Tests/NavSpec/INavSpecification.cs[m
+[1mdeleted file mode 100644[m
+[1mindex 63c29b3..0000000[m
+[1m--- a/SmartNav.Tests/NavSpec/INavSpecification.cs[m
+[1m+++ /dev/null[m
+[36m@@ -1,7 +0,0 @@[m
+[31m-namespace SmartNav.Tests.NavSpec[m
+[31m-{[m
+[31m-    public interface INavSpecification[m
+[31m-    {[m
+[31m-        INavNode Root { get; }[m
+[31m-    }[m
+[31m-}[m
+\ No newline at end of file[m
+[1mdiff --git a/SmartNav.Tests/SmartNav.Tests.csproj b/SmartNav.Tests/SmartNav.Tests.csproj[m
+[1mindex 0d5dfb3..f11a03a 100644[m
+[1m--- a/SmartNav.Tests/SmartNav.Tests.csproj[m
+[1m+++ b/SmartNav.Tests/SmartNav.Tests.csproj[m
+[36m@@ -95,7 +95,7 @@[m
+     <Compile Include="NavView\INavComponentViewModel.cs" />[m
+     <Compile Include="NavSpec\INavNode.cs" />[m
+     <Compile Include="NavCore\INavNodeProperties.cs" />[m
+[31m-    <Compile Include="NavSpec\INavSpecification.cs" />[m
+[32m+[m[32m    <Compile Include="NavSpec\INavTreeSpecification.cs" />[m[41m[m
+     <Compile Include="NavView\INavTreeViewModel.cs" />[m
+     <Compile Include="NavBuilderTest.cs" />[m
+     <Compile Include="NavView\NavItemView.cs" />[m

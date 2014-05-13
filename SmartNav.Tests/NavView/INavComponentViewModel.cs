@@ -13,5 +13,7 @@ namespace SmartNav.Tests.NavView
         string ActivationReason { get; }
         string Url { get; }
         IEnumerable<INavComponentViewModel> Children { get; }
+        string Id { get; }
+        int Level { get; }
     }
 }

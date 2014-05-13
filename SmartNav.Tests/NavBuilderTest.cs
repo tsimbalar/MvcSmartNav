@@ -106,31 +106,46 @@ namespace SmartNav.Tests
 
             var specRoot = any.MockNavNode();
             var navNodeProperties = _fixture.Create<NavNodeProperties>();
-            specRoot.Setup(r => r.EvaluateNode(viewContext)).Returns(navNodeProperties);
+            specRoot.Setup(r => r.Evaluate(viewContext)).Returns(navNodeProperties);
             var spec = any.NavSpecification(specRoot.Object);
 
             // Acts
             var actualRoot = sut.Build(viewContext, spec).Root;
 
             // Assert	
-            AssertNodeViewMatchesProperties(actualRoot, navNodeProperties);
+            AssertViewMatchesSpecDynamicProperties(actualRoot, navNodeProperties);
         }
 
         [TestMethod]
-        public void Build_must_create_tree_with_Root_Name_equivalent_to_Spec_Root()
+        public void Build_must_create_Root_with_Level_0()
         {
             // Arrange		
             var sut = MakeSut();
-            var expectedNodeName = _fixture.Create<string>();
-            var specRoot = any.MockNavNode();
-            specRoot.Setup(r => r.Name).Returns(expectedNodeName);
-            var spec = any.NavSpecification(specRoot.Object);
+            var specRoot = any.MockNavNode().Object;
+            var spec = any.NavSpecification(specRoot);
 
             // Act
             var actualRoot = sut.Build(any.ViewContext(), spec).Root;
 
             // Assert		
-            actualRoot.Name.Should().Be(expectedNodeName);
+            actualRoot.Level.Should().Be(0);
+        }
+
+        [TestMethod]
+        public void Build_must_create_tree_with_Root_static_props_equivalent_to_Spec_Root()
+        {
+            // Arrange		
+            var sut = MakeSut();
+            var expectedNodeName = _fixture.Create<string>();
+            var specRoot = any.MockNavNode();
+            specRoot.Setup(r => r.Id).Returns(expectedNodeName);
+            var spec = any.NavSpecification(specRoot.Object);
+
+            // Act
+            var actualRoot = sut.Build(any.ViewContext(), spec).Root;
+
+            // Assert	
+            AssertViewMatchesSpecStaticProperties(actualRoot, specRoot.Object);
         }
 
         #endregion
@@ -157,13 +172,13 @@ namespace SmartNav.Tests
         }
 
         [TestMethod]
-        public void Build_with_Spec_with_child_must_create_child_with_Name_from_spec()
+        public void Build_with_Spec_with_child_must_create_child_with_static_props_from_spec()
         {
             // Arrange		
             var sut = MakeSut();
             var childName = _fixture.Create<string>();
             var childSpec = any.MockNavNode();
-            childSpec.Setup(s => s.Name).Returns(childName);
+            childSpec.Setup(s => s.Id).Returns(childName);
             var children = new List<INavNode> { childSpec.Object };
             var specRoot = any.MockNavNode();
             specRoot.Setup(r => r.Children).Returns(children);
@@ -174,11 +189,28 @@ namespace SmartNav.Tests
 
             // Assert		
             actualChild.Should().NotBeNull("it should return child");
-            actualChild.Name.Should().Be(childName);
+            AssertViewMatchesSpecStaticProperties(actualChild, childSpec.Object);
         }
 
         [TestMethod]
-        public void Build_with_spec_with_child_must_create_child_with_Properties_equivalent_to_spec()
+        public void Build_with_Spec_with_child_must_create_child_with_level_1()
+        {
+            // Arrange		
+            var sut = MakeSut();
+            var childSpec = any.MockNavNode().Object;
+            var specRoot = any.MockNavNode();
+            specRoot.Setup(r => r.Children).Returns(new List<INavNode> { childSpec });
+            var spec = any.NavSpecification(specRoot.Object);
+
+            // Act
+            var actualChild = sut.Build(any.ViewContext(), spec).Root.Children.Single();
+
+            // Assert		
+            actualChild.Level.Should().Be(1, "level should be 1");
+        }
+
+        [TestMethod]
+        public void Build_with_spec_with_child_must_create_child_with_dynamic_Properties_equivalent_to_spec()
         {
             // Arrange		
             var sut = MakeSut();
@@ -186,7 +218,7 @@ namespace SmartNav.Tests
 
             var childSpec = any.MockNavNode();
             var navNodeProperties = _fixture.Create<NavNodeProperties>();
-            childSpec.Setup(r => r.EvaluateNode(viewContext)).Returns(navNodeProperties);
+            childSpec.Setup(r => r.Evaluate(viewContext)).Returns(navNodeProperties);
             var children = new List<INavNode> { childSpec.Object };
             var specRoot = any.MockNavNode();
             specRoot.Setup(r => r.Children).Returns(children);
@@ -197,7 +229,7 @@ namespace SmartNav.Tests
             var actualChild = sut.Build(viewContext, spec).Root.Children.SingleOrDefault();
 
             // Assert	
-            AssertNodeViewMatchesProperties(actualChild, navNodeProperties);
+            AssertViewMatchesSpecDynamicProperties(actualChild, navNodeProperties);
         }
 
         [TestMethod]
@@ -238,17 +270,61 @@ namespace SmartNav.Tests
             var actualGrandChild = sut.Build(any.ViewContext(), spec).Root.Children.Single().Children.SingleOrDefault();
             // Assert		
             actualGrandChild.Should().NotBeNull("there should be 2 levels");
-            actualGrandChild.Name.Should().Be(grandChildSpec.Name, "it should have the name taken from spec");
+            AssertViewMatchesSpecStaticProperties(actualGrandChild, grandChildSpec);
+        }
+
+        [TestMethod]
+        public void Build_with_Spec_with_grandChild_must_create_grandChild_with_level_2()
+        {
+            // Arrange		
+            var sut = MakeSut();
+            var grandChildSpec = any.MockNavNode().Object;
+            var childSpec = any.MockNavNode();
+            childSpec.Setup(s => s.Children).Returns(new List<INavNode> { grandChildSpec });
+
+            var specRoot = any.MockNavNode();
+            specRoot.Setup(r => r.Children).Returns(new List<INavNode> { childSpec.Object });
+            var spec = any.NavSpecification(specRoot.Object);
+
+            // Act
+            var actualGrandChild = sut.Build(any.ViewContext(), spec).Root.Children.Single().Children.Single();
+
+            // Assert		
+            actualGrandChild.Level.Should().Be(2, "should have level 2");
+
         }
 
         #endregion
-
 
         #region Test Helper Methods
 
         private static NavBuilder MakeSut()
         {
             return new NavBuilder();
+        }
+
+        private static void AssertViewMatchesSpecStaticProperties(INavComponentViewModel actualViewModel, INavNode nodeSpec)
+        {
+            actualViewModel.Name.Should().Be(nodeSpec.Name, "Name should match");
+            actualViewModel.Id.Should().Be(nodeSpec.Id, "Id should match");
+        }
+
+        private static void AssertViewMatchesSpecDynamicProperties(INavComponentViewModel actualRoot, INavNodeProperties navNodeProperties)
+        {
+
+            actualRoot.AsSource().OfLikeness<INavNodeProperties>()
+                .With(p => p.Activation)
+                .EqualsWhen((vm, props) => vm.IsActive == props.Activation.IsActive
+                                           && vm.ActivationReason == props.Activation.Explanation)
+                .With(p => p.Visibility)
+                .EqualsWhen((vm, props) => vm.IsVisible == props.Visibility.IsVisible
+                                           && vm.VisibilityReason == props.Visibility.Explanation)
+                .With(p => p.Enablement)
+                .EqualsWhen((vm, props) => vm.IsEnabled == props.Enablement.IsEnabled
+                                           && vm.EnablementReason == props.Enablement.Explanation)
+                .With(p => p.TargetUrl)
+                .EqualsWhen((vm, props) => vm.Url == props.TargetUrl)
+                .ShouldEqual(navNodeProperties);
         }
 
         #endregion
@@ -269,14 +345,14 @@ namespace SmartNav.Tests
             }
 
 
-            public INavSpecification NavSpecification()
+            public INavTreeSpecification NavSpecification()
             {
                 return NavSpecification(MockNavNode().Object);
             }
 
-            public INavSpecification NavSpecification(INavNode root)
+            public INavTreeSpecification NavSpecification(INavNode root)
             {
-                var result = new Mock<INavSpecification>(MockBehavior.Strict);
+                var result = new Mock<INavTreeSpecification>(MockBehavior.Strict);
                 result.Setup(r => r.Root).Returns(root);
 
                 return result.Object;
@@ -288,12 +364,15 @@ namespace SmartNav.Tests
                 var node = new Mock<INavNode>(MockBehavior.Strict);
                 node.Setup(n => n.Children).Returns(Enumerable.Empty<INavNode>);
 
-                var name = _fixture.Create<string>();
+                var id = _fixture.Create<string>("id");
+                node.Setup(n => n.Id).Returns(id);
+
+                var name = _fixture.Create("name");
                 node.Setup(n => n.Name).Returns(name);
 
 
                 var props = _fixture.Create<NavNodeProperties>();
-                node.Setup(n => n.EvaluateNode(It.IsAny<ViewContext>())).Returns(props);
+                node.Setup(n => n.Evaluate(It.IsAny<ViewContext>())).Returns(props);
 
                 return node;
             }
@@ -303,36 +382,18 @@ namespace SmartNav.Tests
                 return new ViewContext();
             }
         }
-
-        private static void AssertNodeViewMatchesProperties(INavComponentViewModel actualRoot, INavNodeProperties navNodeProperties)
-        {
-
-            actualRoot.AsSource().OfLikeness<INavNodeProperties>()
-                .With(p => p.Activation)
-                    .EqualsWhen((vm, props) => vm.IsActive == props.Activation.IsActive
-                        && vm.ActivationReason == props.Activation.Explanation)
-                .With(p => p.Visibility)
-                    .EqualsWhen((vm, props) => vm.IsVisible == props.Visibility.IsVisible
-                        && vm.VisibilityReason == props.Visibility.Explanation)
-                .With(p => p.Enablement)
-                    .EqualsWhen((vm, props) => vm.IsEnabled == props.Enablement.IsEnabled
-                        && vm.EnablementReason == props.Enablement.Explanation)
-                .With(p => p.TargetUrl)
-                    .EqualsWhen((vm, props) => vm.Url == props.TargetUrl)
-                .ShouldEqual(navNodeProperties);
-        }
     }
 
     internal class NavBuilder
     {
-        public INavTreeViewModel Build(ViewContext viewContext, INavSpecification navSpec)
+        public INavTreeViewModel Build(ViewContext viewContext, INavTreeSpecification navTreeSpec)
         {
             if (viewContext == null) throw new ArgumentNullException("viewContext");
-            if (navSpec == null) throw new ArgumentNullException("navSpec");
+            if (navTreeSpec == null) throw new ArgumentNullException("navTreeSpec");
 
-            var rootNode = navSpec.Root;
-            var rootProperties = rootNode.EvaluateNode(viewContext);
-            var rootView = new NavRootView(rootNode.Name, rootProperties);
+            var rootNode = navTreeSpec.Root;
+            var rootProperties = rootNode.Evaluate(viewContext);
+            var rootView = new NavRootView(rootNode.Id, rootNode.Name, rootProperties);
 
             AddChildrenRecursively(rootView, rootNode.Children, viewContext);
 
@@ -343,8 +404,8 @@ namespace SmartNav.Tests
         {
             foreach (var navNode in childrenSpecs)
             {
-                var nodeProperties = navNode.EvaluateNode(context);
-                var child = new NavItemView(navNode.Name, nodeProperties);
+                var nodeProperties = navNode.Evaluate(context);
+                var child = new NavItemView(navNode.Id, rootToAddTo.Level + 1, navNode.Name, nodeProperties);
                 AddChildrenRecursively(child, navNode.Children, context);
                 rootToAddTo.AddChild(child);
             }

@@ -16,7 +16,7 @@ namespace SmartNav.Tests
         public void ctor_with_rootView_must_assign_Root()
         {
             // Arrange		
-            var expectedRoot = new NavRootView("someName", new Mock<INavNodeProperties>().Object);
+            var expectedRoot = new NavRootView("someId", "someName", new Mock<INavNodeProperties>().Object);
             var sut = new NavTreeView(expectedRoot, new Mock<ViewContext>().Object);
             // Act
             var actual = sut.Root;
@@ -30,7 +30,7 @@ namespace SmartNav.Tests
         {
             // Arrange		
             var expectedViewContext = new Mock<ViewContext>().Object;
-            var sut = new NavTreeView(new NavRootView("someName", new Mock<INavNodeProperties>().Object), expectedViewContext);
+            var sut = new NavTreeView(new NavRootView("someId", "someName", new Mock<INavNodeProperties>().Object), expectedViewContext);
             // Act
             var actual = sut.CallingViewContext;
 
@@ -55,7 +55,7 @@ namespace SmartNav.Tests
 
         private static NavTreeView MakeSut(NavRootView root = null, ViewContext callingViewContext = null)
         {
-            root = root ?? new NavRootView("someName", new Mock<INavNodeProperties>().Object);
+            root = root ?? new NavRootView("someId", "someName", new Mock<INavNodeProperties>().Object);
             callingViewContext = callingViewContext ?? new Mock<ViewContext>().Object;
             return new NavTreeView(root, callingViewContext);
         }

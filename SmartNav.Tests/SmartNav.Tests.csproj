@@ -95,7 +95,7 @@
     <Compile Include="NavView\INavComponentViewModel.cs" />
     <Compile Include="NavSpec\INavNode.cs" />
     <Compile Include="NavCore\INavNodeProperties.cs" />
-    <Compile Include="NavSpec\INavSpecification.cs" />
+    <Compile Include="NavSpec\INavTreeSpecification.cs" />
     <Compile Include="NavView\INavTreeViewModel.cs" />
     <Compile Include="NavBuilderTest.cs" />
     <Compile Include="NavView\NavItemView.cs" />
