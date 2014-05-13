@@ -1,9 +1,9 @@
 using System.Collections.Generic;
 using System.Web.Mvc;
 
-namespace SmartNav.Tests.NavSpec
+namespace SmartNav
 {
-    public interface INavNode
+    public interface INavNodeSpecification
     {
         /// <summary>
         /// Unique identifier for this item in the tree
@@ -18,7 +18,7 @@ namespace SmartNav.Tests.NavSpec
         /// <summary>
         /// Node located right under this node 
         /// </summary>
-        IEnumerable<INavNode> Children { get; }
+        IEnumerable<INavNodeSpecification> Children { get; }
         
         /// <summary>
         /// Evaluate properties for this node when rendering in the specified viewContext 

@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace SmartNav.Tests.NavView
 {
-    public interface INavComponentViewModel
+    public interface INavItemViewModel
     {
         string Name { get; }
         bool IsVisible { get; }
@@ -12,7 +12,7 @@ namespace SmartNav.Tests.NavView
         bool IsActive { get; }
         string ActivationReason { get; }
         string Url { get; }
-        IEnumerable<INavComponentViewModel> Children { get; }
+        IEnumerable<INavItemViewModel> Children { get; }
         string Id { get; }
         int Level { get; }
     }

@@ -1,4 +1,4 @@
-namespace SmartNav.Tests
+namespace SmartNav
 {
     public sealed class NodeVisibility
     {

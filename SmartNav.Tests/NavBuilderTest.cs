@@ -7,7 +7,6 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using Ploeh.AutoFixture;
 using Ploeh.SemanticComparison.Fluent;
-using SmartNav.Tests.NavSpec;
 using SmartNav.Tests.NavView;
 
 namespace SmartNav.Tests
@@ -59,7 +58,7 @@ namespace SmartNav.Tests
 
             // Assert	
             actual.Should().NotBeNull("should return a non null treeview");
-            actual.Should().BeAssignableTo<INavTreeViewModel>();
+            actual.Should().BeAssignableTo<INavViewModel>();
         }
 
 
@@ -89,7 +88,7 @@ namespace SmartNav.Tests
 
             // Assert		
             actualRoot.Should().NotBeNull();
-            actualRoot.Should().BeAssignableTo<INavComponentViewModel>();
+            actualRoot.Should().BeAssignableTo<INavItemViewModel>();
         }
 
         #endregion
@@ -158,7 +157,7 @@ namespace SmartNav.Tests
             // Arrange		
             var sut = MakeSut();
             var childSpec = any.MockNavNode().Object;
-            var children = new List<INavNode> { childSpec };
+            var children = new List<INavNodeSpecification> { childSpec };
             var specRoot = any.MockNavNode();
             specRoot.Setup(r => r.Children).Returns(children);
             var spec = any.NavSpecification(specRoot.Object);
@@ -179,7 +178,7 @@ namespace SmartNav.Tests
             var childName = _fixture.Create<string>();
             var childSpec = any.MockNavNode();
             childSpec.Setup(s => s.Id).Returns(childName);
-            var children = new List<INavNode> { childSpec.Object };
+            var children = new List<INavNodeSpecification> { childSpec.Object };
             var specRoot = any.MockNavNode();
             specRoot.Setup(r => r.Children).Returns(children);
             var spec = any.NavSpecification(specRoot.Object);
@@ -199,7 +198,7 @@ namespace SmartNav.Tests
             var sut = MakeSut();
             var childSpec = any.MockNavNode().Object;
             var specRoot = any.MockNavNode();
-            specRoot.Setup(r => r.Children).Returns(new List<INavNode> { childSpec });
+            specRoot.Setup(r => r.Children).Returns(new List<INavNodeSpecification> { childSpec });
             var spec = any.NavSpecification(specRoot.Object);
 
             // Act
@@ -219,7 +218,7 @@ namespace SmartNav.Tests
             var childSpec = any.MockNavNode();
             var navNodeProperties = _fixture.Create<NavNodeProperties>();
             childSpec.Setup(r => r.Evaluate(viewContext)).Returns(navNodeProperties);
-            var children = new List<INavNode> { childSpec.Object };
+            var children = new List<INavNodeSpecification> { childSpec.Object };
             var specRoot = any.MockNavNode();
             specRoot.Setup(r => r.Children).Returns(children);
 
@@ -238,7 +237,7 @@ namespace SmartNav.Tests
             // Arrange		
             var sut = MakeSut();
 
-            var childSpecs = new List<INavNode> { any.MockNavNode().Object, any.MockNavNode().Object, any.MockNavNode().Object };
+            var childSpecs = new List<INavNodeSpecification> { any.MockNavNode().Object, any.MockNavNode().Object, any.MockNavNode().Object };
 
             var specRoot = any.MockNavNode();
             specRoot.Setup(r => r.Children).Returns(childSpecs);
@@ -259,10 +258,10 @@ namespace SmartNav.Tests
             var sut = MakeSut();
             var grandChildSpec = any.MockNavNode().Object;
             var childSpec = any.MockNavNode();
-            childSpec.Setup(s => s.Children).Returns(new List<INavNode> { grandChildSpec });
+            childSpec.Setup(s => s.Children).Returns(new List<INavNodeSpecification> { grandChildSpec });
 
             var specRoot = any.MockNavNode();
-            specRoot.Setup(r => r.Children).Returns(new List<INavNode> { childSpec.Object });
+            specRoot.Setup(r => r.Children).Returns(new List<INavNodeSpecification> { childSpec.Object });
 
             var spec = any.NavSpecification(specRoot.Object);
 
@@ -280,10 +279,10 @@ namespace SmartNav.Tests
             var sut = MakeSut();
             var grandChildSpec = any.MockNavNode().Object;
             var childSpec = any.MockNavNode();
-            childSpec.Setup(s => s.Children).Returns(new List<INavNode> { grandChildSpec });
+            childSpec.Setup(s => s.Children).Returns(new List<INavNodeSpecification> { grandChildSpec });
 
             var specRoot = any.MockNavNode();
-            specRoot.Setup(r => r.Children).Returns(new List<INavNode> { childSpec.Object });
+            specRoot.Setup(r => r.Children).Returns(new List<INavNodeSpecification> { childSpec.Object });
             var spec = any.NavSpecification(specRoot.Object);
 
             // Act
@@ -303,13 +302,13 @@ namespace SmartNav.Tests
             return new NavBuilder();
         }
 
-        private static void AssertViewMatchesSpecStaticProperties(INavComponentViewModel actualViewModel, INavNode nodeSpec)
+        private static void AssertViewMatchesSpecStaticProperties(INavItemViewModel actualViewModel, INavNodeSpecification nodeSpecificationSpec)
         {
-            actualViewModel.Name.Should().Be(nodeSpec.Name, "Name should match");
-            actualViewModel.Id.Should().Be(nodeSpec.Id, "Id should match");
+            actualViewModel.Name.Should().Be(nodeSpecificationSpec.Name, "Name should match");
+            actualViewModel.Id.Should().Be(nodeSpecificationSpec.Id, "Id should match");
         }
 
-        private static void AssertViewMatchesSpecDynamicProperties(INavComponentViewModel actualRoot, INavNodeProperties navNodeProperties)
+        private static void AssertViewMatchesSpecDynamicProperties(INavItemViewModel actualRoot, INavNodeProperties navNodeProperties)
         {
 
             actualRoot.AsSource().OfLikeness<INavNodeProperties>()
@@ -345,24 +344,24 @@ namespace SmartNav.Tests
             }
 
 
-            public INavTreeSpecification NavSpecification()
+            public INavSpecification NavSpecification()
             {
                 return NavSpecification(MockNavNode().Object);
             }
 
-            public INavTreeSpecification NavSpecification(INavNode root)
+            public INavSpecification NavSpecification(INavNodeSpecification root)
             {
-                var result = new Mock<INavTreeSpecification>(MockBehavior.Strict);
+                var result = new Mock<INavSpecification>(MockBehavior.Strict);
                 result.Setup(r => r.Root).Returns(root);
 
                 return result.Object;
             }
 
 
-            public Mock<INavNode> MockNavNode()
+            public Mock<INavNodeSpecification> MockNavNode()
             {
-                var node = new Mock<INavNode>(MockBehavior.Strict);
-                node.Setup(n => n.Children).Returns(Enumerable.Empty<INavNode>);
+                var node = new Mock<INavNodeSpecification>(MockBehavior.Strict);
+                node.Setup(n => n.Children).Returns(Enumerable.Empty<INavNodeSpecification>);
 
                 var id = _fixture.Create<string>("id");
                 node.Setup(n => n.Id).Returns(id);
@@ -382,35 +381,5 @@ namespace SmartNav.Tests
                 return new ViewContext();
             }
         }
-    }
-
-    internal class NavBuilder
-    {
-        public INavTreeViewModel Build(ViewContext viewContext, INavTreeSpecification navTreeSpec)
-        {
-            if (viewContext == null) throw new ArgumentNullException("viewContext");
-            if (navTreeSpec == null) throw new ArgumentNullException("navTreeSpec");
-
-            var rootNode = navTreeSpec.Root;
-            var rootProperties = rootNode.Evaluate(viewContext);
-            var rootView = new NavRootView(rootNode.Id, rootNode.Name, rootProperties);
-
-            AddChildrenRecursively(rootView, rootNode.Children, viewContext);
-
-            return new NavTreeView(rootView, viewContext);
-        }
-
-        private void AddChildrenRecursively(NavItemViewBase rootToAddTo, IEnumerable<INavNode> childrenSpecs, ViewContext context)
-        {
-            foreach (var navNode in childrenSpecs)
-            {
-                var nodeProperties = navNode.Evaluate(context);
-                var child = new NavItemView(navNode.Id, rootToAddTo.Level + 1, navNode.Name, nodeProperties);
-                AddChildrenRecursively(child, navNode.Children, context);
-                rootToAddTo.AddChild(child);
-            }
-        }
-
-
     }
 }

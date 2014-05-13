@@ -1,6 +1,6 @@
-namespace SmartNav.Tests
+namespace SmartNav
 {
-    class NavNodeProperties : INavNodeProperties
+    internal sealed class NavNodeProperties : INavNodeProperties
     {
         public NodeActivation Activation { get; set; }
         public NodeVisibility Visibility { get; set; }

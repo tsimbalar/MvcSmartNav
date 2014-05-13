@@ -3,13 +3,13 @@ using System.Collections.Generic;
 
 namespace SmartNav.Tests.NavView
 {
-    public abstract class NavItemViewBase : INavComponentViewModel
+    public abstract class NavItemViewBase : INavItemViewModel
     {
         private readonly string _id;
         private readonly int _level;
         private readonly string _name;
         private readonly INavNodeProperties _props;
-        private readonly List<INavComponentViewModel> _children;
+        private readonly List<INavItemViewModel> _children;
 
         protected NavItemViewBase(string id, int level, string name, INavNodeProperties props)
         {
@@ -20,7 +20,7 @@ namespace SmartNav.Tests.NavView
             _level = level;
             _name = name;
             _props = props;
-            _children = new List<INavComponentViewModel>();
+            _children = new List<INavItemViewModel>();
         }
 
         public string Name { get { return _name; } }
@@ -60,7 +60,7 @@ namespace SmartNav.Tests.NavView
             get { return _props.TargetUrl; }
         }
 
-        public IEnumerable<INavComponentViewModel> Children { get { return _children; } }
+        public IEnumerable<INavItemViewModel> Children { get { return _children; } }
 
         public string Id
         {
@@ -69,7 +69,7 @@ namespace SmartNav.Tests.NavView
 
         public int Level { get { return _level; } }
 
-        public void AddChild(INavComponentViewModel child)
+        public void AddChild(INavItemViewModel child)
         {
             _children.Add(child);
         }

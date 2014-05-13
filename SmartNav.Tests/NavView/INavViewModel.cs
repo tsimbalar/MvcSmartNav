@@ -2,9 +2,9 @@ using System.Web.Mvc;
 
 namespace SmartNav.Tests.NavView
 {
-    public interface INavTreeViewModel
+    public interface INavViewModel
     {
-        INavComponentViewModel Root { get; }
+        INavItemViewModel Root { get; }
         ViewContext CallingViewContext { get; }
     }
 }

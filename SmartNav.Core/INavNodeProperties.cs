@@ -1,4 +1,4 @@
-namespace SmartNav.Tests
+namespace SmartNav
 {
     public interface INavNodeProperties
     {

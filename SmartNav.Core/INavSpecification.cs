@@ -1,10 +1,10 @@
-namespace SmartNav.Tests.NavSpec
+namespace SmartNav
 {
     /// <summary>
     /// The specification for a dynamically generated navigation tree
     /// </summary>
-    public interface INavTreeSpecification
+    public interface INavSpecification
     {
-        INavNode Root { get; }
+        INavNodeSpecification Root { get; }
     }
 }
