@@ -57,14 +57,9 @@ namespace SmartNav.Tests.NavView
 
         public IEnumerable<INavComponentViewModel> Children { get { return _children; } }
 
-        protected void AddChild(INavComponentViewModel child)
+        public void AddChild(INavComponentViewModel child)
         {
             _children.Add(child);
-        }
-
-        public void AddChild(NavItemView navItemView)
-        {
-            AddChild((INavComponentViewModel) navItemView);            
         }
     }
 }
