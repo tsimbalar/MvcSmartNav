@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace SmartNav.Tests.NavView
+namespace SmartNav.Mvc.NavView
 {
     public interface INavItemViewModel
     {

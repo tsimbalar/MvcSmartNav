@@ -1,6 +1,6 @@
 using System.Web.Mvc;
 
-namespace SmartNav.Tests.NavView
+namespace SmartNav.Mvc.NavView
 {
     public interface INavViewModel
     {

@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.30110.0
+VisualStudioVersion = 12.0.30501.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApp", "WebApp\WebApp.csproj", "{7B750D2D-383D-4F62-8199-20B29034DA83}"
 EndProject
@@ -18,6 +18,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartNav.Core", "SmartNav.Core\SmartNav.Core.csproj", "{5395D013-3C71-48D8-AF85-15475717D444}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartNav.Example", "SmartNav.Example\SmartNav.Example.csproj", "{B84505AD-7D7F-4CE5-B140-B4DBC637C81B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartNav.Mvc", "SmartNav.Mvc\SmartNav.Mvc.csproj", "{71EDED90-EC7C-4D74-84C1-0315F94AC7F7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -45,6 +47,10 @@ Global
 		{B84505AD-7D7F-4CE5-B140-B4DBC637C81B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B84505AD-7D7F-4CE5-B140-B4DBC637C81B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B84505AD-7D7F-4CE5-B140-B4DBC637C81B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{71EDED90-EC7C-4D74-84C1-0315F94AC7F7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{71EDED90-EC7C-4D74-84C1-0315F94AC7F7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{71EDED90-EC7C-4D74-84C1-0315F94AC7F7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{71EDED90-EC7C-4D74-84C1-0315F94AC7F7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

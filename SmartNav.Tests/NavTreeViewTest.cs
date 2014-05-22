@@ -2,7 +2,7 @@
 using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
-using SmartNav.Tests.NavView;
+using SmartNav.Mvc.NavView;
 
 namespace SmartNav.Tests
 {
@@ -17,7 +17,7 @@ namespace SmartNav.Tests
         {
             // Arrange		
             var expectedRoot = new NavRootView("someId", "someName", new Mock<INavNodeProperties>().Object);
-            var sut = new NavView.NavView(expectedRoot, new Mock<ViewContext>().Object);
+            var sut = new NavView(expectedRoot, new Mock<ViewContext>().Object);
             // Act
             var actual = sut.Root;
 
@@ -30,7 +30,7 @@ namespace SmartNav.Tests
         {
             // Arrange		
             var expectedViewContext = new Mock<ViewContext>().Object;
-            var sut = new NavView.NavView(new NavRootView("someId", "someName", new Mock<INavNodeProperties>().Object), expectedViewContext);
+            var sut = new NavView(new NavRootView("someId", "someName", new Mock<INavNodeProperties>().Object), expectedViewContext);
             // Act
             var actual = sut.CallingViewContext;
 
@@ -53,11 +53,11 @@ namespace SmartNav.Tests
         #endregion
 
 
-        private static NavView.NavView MakeSut(NavRootView root = null, ViewContext callingViewContext = null)
+        private static NavView MakeSut(NavRootView root = null, ViewContext callingViewContext = null)
         {
             root = root ?? new NavRootView("someId", "someName", new Mock<INavNodeProperties>().Object);
             callingViewContext = callingViewContext ?? new Mock<ViewContext>().Object;
-            return new NavView.NavView(root, callingViewContext);
+            return new NavView(root, callingViewContext);
         }
 
 

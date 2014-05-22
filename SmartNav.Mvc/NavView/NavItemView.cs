@@ -1,4 +1,4 @@
-namespace SmartNav.Tests.NavView
+namespace SmartNav.Mvc.NavView
 {
     public sealed class NavItemView : NavItemViewBase
     {

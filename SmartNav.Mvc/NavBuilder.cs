@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Web.Mvc;
-using SmartNav.Tests.NavView;
+using SmartNav.Mvc.NavView;
 
-namespace SmartNav.Tests
+namespace SmartNav.Mvc
 {
     internal sealed class NavBuilder
     {

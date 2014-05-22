@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("SmartNav.Core")]
+[assembly: AssemblyTitle("SmartNav.Mvc")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("SmartNav.Core")]
+[assembly: AssemblyProduct("SmartNav.Mvc")]
 [assembly: AssemblyCopyright("Copyright ©  2014")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("51163f96-fd2c-41ce-91c7-1eeb89cdd6eb")]
+[assembly: Guid("fb9cab8f-5a38-43e0-b5b6-c3d4fe6b661d")]
 
 // Version information for an assembly consists of the following four values:
 //
@@ -35,4 +35,4 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyVersion("0.2.0.0")]
 [assembly: AssemblyFileVersion("0.2.0.0")]
 
-[assembly:InternalsVisibleTo("SmartNav.Tests")]
+[assembly: InternalsVisibleTo("SmartNav.Tests")]

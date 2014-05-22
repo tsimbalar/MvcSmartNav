@@ -7,7 +7,8 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using Ploeh.AutoFixture;
 using Ploeh.SemanticComparison.Fluent;
-using SmartNav.Tests.NavView;
+using SmartNav.Mvc;
+using SmartNav.Mvc.NavView;
 
 namespace SmartNav.Tests
 {
